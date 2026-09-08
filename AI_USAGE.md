@@ -10,7 +10,7 @@ table below and write only:
 
 | # | Tool (name/version) | Used by | Stage/date | Purpose | Section(s) affected | Prompt summary / log link | AI contribution | Student verification | Responsible member |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | | | | | | | | | |
+| 1 |ChatGPT/5.6 Luna |Nguyen Thanh The | |AI checking structure for repository skeleton| |Check if the repository skeleton is enough |20% | | |
 
 ### Field guide
 - **Tool:** exact tool name and model/version if known.
