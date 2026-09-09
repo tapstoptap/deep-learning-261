@@ -1,23 +1,36 @@
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 .venv/
 *.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
 
-# Data & large artifacts (do not commit raw datasets or large checkpoints)
-data/raw/
-data/processed/
+# Local datasets
+**/data/*
+!**/data/.gitkeep
+
+# Model weights
+**/checkpoints/*
+!**/checkpoints/.gitkeep
 *.pt
 *.pth
 *.ckpt
-!.gitkeep
 
-# Logs
+# Experiment services and local logs
+**/runs/
+**/wandb/
 *.log
-runs/
-wandb/
 
-# OS / editor
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
