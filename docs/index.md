@@ -33,4 +33,6 @@ title: Home
 ## AI Usage Disclosure
 Summary of AI tool use across all three assignments. Full log: [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md).
 
-Generative AI was used to review the repository structure and documentation requirements. All suggestions were manually reviewed against the course handbook before adoption. See the detailed AI usage log for affected files and verification information.
+Generative AI was used to review the repository structure and to draft the initial
+Assignment 1 configuration and protocol documentation. All suggestions and
+experimental settings remain subject to student review before adoption.
