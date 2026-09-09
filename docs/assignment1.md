@@ -24,6 +24,11 @@ input size, imbalance analysis, representative samples.)
 input representation, loss, parameter count, self-implemented vs. library parts.)
 
 ## Experimental Setup
+- Shared configuration: `assignment1/configs/protocol.yaml`
+- [Experiment protocol and decision record](assignment1-experiment-protocol.md)
+
+Hardware, software versions, finalized normalization statistics, and actual main-run
+seeds will be filled in after the protocol is reviewed and frozen.
 (Optimizer, LR, batch size, epochs, scheduler, seed, hardware, training time.)
 
 ## Results
@@ -45,4 +50,5 @@ input representation, loss, parameter count, self-implemented vs. library parts.
 - YouTube presentation video: [GitHub](Not Available)
 
 ## AI Usage Disclosure (Assignment 1)
-(See [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md) for the full log.)
+Generative AI assisted with the Assignment 1 configuration and protocol planning.
+See [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md) for the full log.

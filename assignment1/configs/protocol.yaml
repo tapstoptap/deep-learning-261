@@ -1,0 +1,64 @@
+# Shared experiment contract for every Assignment 1 model.
+# Status remains draft until the group reviews the smoke-test results.
+
+protocol:
+  id: a1
+  status: draft
+  approved_by: []
+
+data:
+  dataset: fashion_mnist
+  root: data
+  train_size: 54000
+  validation_size: 6000
+  test_size: 10000
+  validation_ratio: 0.10
+  stratified: true
+  split_seed: 42
+  split_file: configs/splits/fashion_mnist_seed42.json
+
+preprocessing:
+  image_size: [28, 28]
+  channels: 1
+  normalization:
+    enabled: false
+    # Measure on the final 54,000-sample training subset before protocol freeze.
+    # Null means the value is still pending.
+    mean: null
+    std: null
+  augmentation:
+    enabled: false
+
+reproducibility:
+  development_seed: 42
+  run_seeds: [42, 123, 2026]
+  deterministic: true
+
+dataloader:
+  num_workers: 2
+  pin_memory: true
+
+evaluation:
+  metrics: [accuracy, macro_f1]
+  labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  zero_division: 0
+  test_policy: evaluate_once_after_model_selection
+
+checkpoint:
+  monitor: val_macro_f1
+  mode: max
+  tie_breaker: [val_loss_min, earlier_epoch]
+  save_best: true
+  save_last: true
+  evaluate: best
+
+timing:
+  benchmark_device: null
+  precision: float32
+  scope: forward_only
+  warmup_batches: 5
+  measurement_repeats: 3
+
+paths:
+  output_root: results
+  checkpoint_root: checkpoints

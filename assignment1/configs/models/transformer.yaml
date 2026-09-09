@@ -1,0 +1,32 @@
+protocol_file: ../protocol.yaml
+
+model:
+  name: transformer
+  parameters:
+    representation: image_rows
+    sequence_length: 28
+    token_input_dim: 28
+    embedding_dim: 64
+    num_heads: 4
+    num_encoder_layers: 2
+    feedforward_dim: 128
+    dropout: 0.1
+    pooling: mean
+    num_classes: 10
+
+training:
+  batch_size: 128
+  max_epochs: 50
+  loss: cross_entropy
+  optimizer:
+    name: adam
+    learning_rate: 0.001
+    weight_decay: 0.0001
+  scheduler:
+    enabled: false
+  early_stopping:
+    enabled: true
+    monitor: val_macro_f1
+    mode: max
+    patience: 7
+    min_delta: 0.0001
