@@ -5,7 +5,12 @@ title: Assignment 3
 # Assignment 3 — Multimodal Deep Learning
 ### Task: [Image–text classification / Retrieval / VQA / Captioning / ...]
 
-**Group members:** ...
+Status: Planned — dataset proposal not yet submitted.
+
+**Group 99 - PTQ members:**
+- Nguyen Minh Phuc
+- Nguyen Thanh The
+- Nguyen Minh Quang
 **Instructor:** Lê Thành Sách
 
 ## Problem Statement
@@ -34,11 +39,11 @@ Dataset Proposal summary and approval status.)
 ## Limitations and Conclusion
 
 ## Links
-- Dataset proposal: [link](#)
-- Source code: [link](#)
-- Checkpoints / reproduction instructions: [link](#)
-- Report / slides: [link](#)
-- YouTube presentation video: [link](#)
+- Dataset proposal: [GitHub](Not Available)
+- Source code: [GitHub](Not Available)
+- Checkpoints / reproduction instructions: [GitHub](Not Available)
+- Report / slides: [GitHub](Not Available)
+- YouTube presentation video: [GitHub](Not Available)
 
 ## AI Usage Disclosure (Assignment 3)
 (See [AI_USAGE.md](../AI_USAGE.md) for the full log.)

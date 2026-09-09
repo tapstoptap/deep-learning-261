@@ -1,5 +1,5 @@
-torch==2.x.x
-torchvision==0.x.x
+torch
+torchvision
 numpy
 pandas
 scikit-learn

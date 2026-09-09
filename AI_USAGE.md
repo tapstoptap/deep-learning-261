@@ -1,19 +1,15 @@
-# AI Usage Log — Group [ID]
+# AI Usage Log — Group 99 - PTQ
 
 This file logs all generative-AI tool use across Assignments 1–3, per the
-course AI-use policy. If no AI was used anywhere in the project, delete the
-table below and write only:
-
-> The group declares that no generative AI tool was used in this assignment.
-
+course AI-use policy.
 ## Log
 
-| # | Tool (name/version) | Used by | Stage/date | Purpose | Section(s) affected | Prompt summary / log link | AI contribution | Student verification | Responsible member |
-|---|---|---|---|---|---|---|---|---|---|
-| 1 |ChatGPT/5.6 Luna |Nguyen Thanh The | |AI checking structure for repository skeleton| |Check if the repository skeleton is enough |20% | | |
+| # | Tool (name/version) | Used by | Stage/date | Purpose | Section(s) affected | Prompt summary / log link | AI contribution | Verification Sources| Student verification | Responsible member |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | OpenAI ChatGPT 5.6 Luna | Nguyen Thanh The | Repository initialization, 8–9 Sep 2026 | Review repository structure and handbook compliance | README.md, docs/*.md, AI_USAGE.md | Asked whether the course-project skeleton satisfied the handbook | Suggested documentation, Pages, disclosure, and reproducibility improvements; no autonomous edits | Course handbook; GitHub Pages documentation | Suggestions manually reviewed; Pages URL and links tested | Nguyen Thanh The |
 
 ### Field guide
-- **Tool:** exact tool name and model/version if known.
+- **Tool and model:** exact tool name and model/version if known.
 - **Used by:** member name.
 - **Stage/date:** development stage or timestamp.
 - **Purpose:** e.g. literature search, concept explanation, architecture/experiment

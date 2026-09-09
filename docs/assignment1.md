@@ -5,7 +5,11 @@ title: Assignment 1
 # Assignment 1 — Foundations of Deep Learning Pipelines and Architectures
 ### From Linear Models to Modern Sequence Models: A Comparative Study for Image Classification
 
-**Group members:** ...
+**Group 99 - PTQ members:**
+- Nguyen Minh Phuc
+- Nguyen Thanh The
+- Nguyen Minh Quang
+
 **Instructor:** Lê Thành Sách
 
 ## Problem Statement
@@ -34,10 +38,11 @@ input representation, loss, parameter count, self-implemented vs. library parts.
 ## Limitations and Conclusion
 
 ## Links
-- Source code: [link](#)
-- Checkpoints / reproduction instructions: [link](#)
-- Report / slides: [link](#)
-- YouTube presentation video: [link](#)
+- Dataset proposal: [GitHub](Not Available)
+- Source code: [Assignment 1 source code](https://github.com/tapstoptap/deep-learning-261/tree/main/assignment1)
+- Checkpoints / reproduction instructions: [GitHub](Not Available)
+- Report / slides: [GitHub](Not Available)
+- YouTube presentation video: [GitHub](Not Available)
 
 ## AI Usage Disclosure (Assignment 1)
-(See [AI_USAGE.md](../AI_USAGE.md) for the full log.)
+(See [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md) for the full log.)

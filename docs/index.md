@@ -3,10 +3,9 @@ title: Home
 ---
 
 # Deep Learning and Its Applications — Course Project
-## Group [ID] — [Group Name]
 
 ## Institutional Information
-- Ho Chi Minh City University of Technology (HCMUT) – VNU-HCM
+- Ho Chi Minh City University of Technology (HCMUT) - VNU-HCM
 - Faculty of Computer Science and Engineering
 
 ## Course Information
@@ -16,13 +15,15 @@ title: Home
 - Instructor: Lê Thành Sách
 
 ## Group Information
+### Group 99 — Group Name: PTQ
+
 | Member | Student ID | Role / Contribution | GitHub |
 |---|---|---|---|
-| ... | ... | ... | [link](#) |
-| ... | ... | ... | [link](#) |
-| ... | ... | ... | [link](#) |
+| Nguyen Minh Phuc | 2453005 | Ideas & Techies  | [GitHub](https://github.com/tapstoptap) |
+| Nguyen Thanh The | 2453191 | Ideas & Techies | [GitHub](https://github.com/Themenli1) |
+| Nguyen Minh Quang | 2453052 | Ideas & Techies | [GitHub](https://github.com/quangnguyencomeng) |
 
-**Code repository:** [link to repo](#)
+**Code repository:** [GitHub](https://github.com/tapstoptap/deep-learning-261)
 
 ## Assignments
 - [Assignment 1 — Foundations of Deep Learning Pipelines and Architectures](assignment1.md)
@@ -30,7 +31,6 @@ title: Home
 - [Assignment 3 — Multimodal Deep Learning](assignment3.md)
 
 ## AI Usage Disclosure
-Summary of AI tool use across all three assignments. Full log: [AI_USAGE.md](../AI_USAGE.md).
+Summary of AI tool use across all three assignments. Full log: [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md).
 
-> The group declares that no generative AI tool was used in this project.
-> *(or: brief summary — tools used, purposes, verification approach; see AI_USAGE.md for details)*
+Generative AI was used to review the repository structure and documentation requirements. All suggestions were manually reviewed against the course handbook before adoption. See the detailed AI usage log for affected files and verification information.
