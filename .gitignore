@@ -24,6 +24,15 @@ __pycache__/
 **/wandb/
 *.log
 
+# Raw Assignment 1 runs are local; curated benchmark artifacts are tracked separately
+assignment1/results/linear/
+assignment1/results/mlp/
+assignment1/results/cnn/
+assignment1/results/rnn/
+assignment1/results/transformer/
+assignment1/results/model_comparison.csv
+assignment1/results/model_comparison.json
+
 # Secrets
 .env
 .env.*

@@ -1,0 +1,72 @@
+[
+  {
+    "model": "cnn",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "accuracy_mean": 0.9245666666666666,
+    "accuracy_std": 0.0015502687938977933,
+    "macro_f1_mean": 0.9243824961775083,
+    "macro_f1_std": 0.0014023809375937348,
+    "trainable_parameters": 421642,
+    "training_time_seconds_mean": 194.51145160000306,
+    "training_time_seconds_std": 7.525313286241246,
+    "inference_ms_per_sample_mean": 0.0045814955522978885,
+    "inference_ms_per_sample_std": 0.00010931279890269205
+  },
+  {
+    "model": "linear",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "accuracy_mean": 0.8447666666666667,
+    "accuracy_std": 0.0005773502691896262,
+    "macro_f1_mean": 0.8439000458773274,
+    "macro_f1_std": 0.0005074347224926018,
+    "trainable_parameters": 7850,
+    "training_time_seconds_mean": 201.36771316669183,
+    "training_time_seconds_std": 67.64812099335612,
+    "inference_ms_per_sample_mean": 0.0010400311096519644,
+    "inference_ms_per_sample_std": 0.000120444421717368
+  },
+  {
+    "model": "mlp",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "accuracy_mean": 0.8924333333333333,
+    "accuracy_std": 0.0026857649437978227,
+    "macro_f1_mean": 0.8923592073122136,
+    "macro_f1_std": 0.0021287094194328846,
+    "trainable_parameters": 235146,
+    "training_time_seconds_mean": 261.7132011000261,
+    "training_time_seconds_std": 68.84152733600676,
+    "inference_ms_per_sample_mean": 0.0029901255575370874,
+    "inference_ms_per_sample_std": 0.0007170582806248602
+  },
+  {
+    "model": "rnn",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "accuracy_mean": 0.9005333333333333,
+    "accuracy_std": 0.003426854728950888,
+    "macro_f1_mean": 0.9003267666261777,
+    "macro_f1_std": 0.003438419040808271,
+    "trainable_parameters": 61962,
+    "training_time_seconds_mean": 291.29788536667667,
+    "training_time_seconds_std": 30.546950530769067,
+    "inference_ms_per_sample_mean": 0.006657285553066888,
+    "inference_ms_per_sample_std": 0.0001874720979126128
+  },
+  {
+    "model": "transformer",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "accuracy_mean": 0.8982666666666667,
+    "accuracy_std": 0.002554081700598734,
+    "macro_f1_mean": 0.8980921045617413,
+    "macro_f1_std": 0.0024393337692100317,
+    "trainable_parameters": 71242,
+    "training_time_seconds_mean": 286.4607001666639,
+    "training_time_seconds_std": 87.3825830658327,
+    "inference_ms_per_sample_mean": 0.01010137664917339,
+    "inference_ms_per_sample_std": 0.00022815164135072806
+  }
+]
