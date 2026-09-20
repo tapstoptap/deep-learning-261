@@ -1,70 +1,50 @@
-# Benchmark Environment
+# Assignment 1 Benchmark Environment
 
-This document records the primary environment used for the reported project experiments. To keep comparisons fair, the main benchmark models will be evaluated on the same machine and software environment.
+This environment produced the six reported Linear/MLP runs for the 23 September
+milestone.
 
-## Hardware
+## Hardware and operating system
 
-- GPU: NVIDIA GeForce RTX 4090, 24 GB
-- CPU: `<output from lscpu>`
-- RAM: `<output from free -h>`
+- GPU: NVIDIA GeForce RTX 4050 Laptop GPU, 6 GB.
+- CPU: 13th Gen Intel Core i7-13620H.
+- NVIDIA driver: 596.36.
+- Windows build: `10.0.26200.9457`.
+- Shell: PowerShell.
 
-## Operating System
+## Python environment
 
-- OS: Ubuntu 22.04.5 LTS
-- Kernel: `<output from uname -r>`
-- NVIDIA driver: `<output from nvidia-smi>`
-- Driver-supported CUDA version: 12.4
-- System CUDA Toolkit (`nvcc`): `<version or not installed>`
+- Conda environment: `uav`.
+- Python: 3.11.15.
+- pip: 26.1.1.
+- PyTorch: 2.5.1+cu121.
+- torchvision: 0.20.1+cu121.
+- CUDA runtime bundled with PyTorch: 12.1.
+- cuDNN reported by PyTorch: 90100.
 
-## Python Environment
-
-- Python: `<version>`
-- pip: `<version>`
-- PyTorch: `<version reported by torch.__version__>`
-- torchvision: `<version reported by torchvision.__version__>`
-- CUDA runtime bundled with PyTorch: `<value from torch.version.cuda>`
-- cuDNN: `<value from torch.backends.cudnn.version()>`
-- CUDA available to PyTorch: `<True or False>`
-
-## Installation
-
-Create and activate the environment:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-```
-
-Install the CUDA 12.4 PyTorch build:
-
-```bash
-python -m pip install torch==2.6.0 torchvision==0.21.0 \
-  --index-url https://download.pytorch.org/whl/cu124
-```
-
-Install the remaining project dependencies:
-
-```bash
-python -m pip install numpy pandas scikit-learn matplotlib seaborn pyyaml tqdm
-```
+Remaining direct dependencies are pinned in `requirements.txt`.
 
 ## Verification
 
-```bash
-python -c "import torch, torchvision; print('PyTorch:', torch.__version__); print('torchvision:', torchvision.__version__); print('CUDA available:', torch.cuda.is_available()); print('CUDA runtime:', torch.version.cuda); print('cuDNN:', torch.backends.cudnn.version()); print('GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'none')"
+```powershell
+python -c "import torch, torchvision; print(torch.__version__); print(torchvision.__version__); print(torch.cuda.is_available()); print(torch.version.cuda); print(torch.cuda.get_device_name(0))"
 ```
 
-Expected hardware result:
+Expected benchmark output:
 
 ```text
-CUDA available: True
-GPU: NVIDIA GeForce RTX 4090
+2.5.1+cu121
+0.20.1+cu121
+True
+12.1
+NVIDIA GeForce RTX 4050 Laptop GPU
 ```
 
-## Benchmark Notes
+## Benchmark notes
 
-- All main reported model comparisons will use this Ubuntu RTX 4090 environment.
-- Mixed precision: `<enabled, disabled, or not decided>`
-- Exact resolved packages are recorded in `requirements-lock.txt`.
-- Timing methodology will be documented together with the final benchmark results.
+- Float32 precision; automatic mixed precision disabled.
+- Batch size 128 and DataLoader workers 0.
+- Deterministic PyTorch operations enabled; cuDNN benchmarking disabled.
+- Forward-only inference timing with five warm-up batches and three repetitions.
+- CUDA synchronization around every timed forward pass.
+- Training time can be affected by normal laptop activity; predictive metrics
+  are deterministic for a fixed seed and configuration.

@@ -4,107 +4,107 @@ title: Assignment 1 Experiment Protocol
 
 # Assignment 1 Experiment Protocol
 
-This document is the human-readable contract for the shared configuration in
-`assignment1/configs/protocol.yaml`. It records what every model must share, why
-the choices were made, which values are still provisional, and how changes are
-approved. Architecture and training settings are kept in each model YAML because
-different model families may require different training choices. The YAML files
-are consumed by code; this page is used for group review, the report, and
-reproducibility evidence.
+This document is the human-readable contract for
+`assignment1/configs/protocol.yaml`. The 23 September milestone covers the
+Linear and MLP baselines; later Assignment 1 models must follow the same shared
+rules before their results can be added to the comparison.
 
 ## Status
 
-- Protocol ID: `a1`
-- Status: Draft
-- Approval: Pending group review
-- Freeze point: Before the main five-model comparison
+- Protocol ID: `a1`.
+- Status: executed draft.
+- Approval: pending group review.
+- Completed main runs: six (two models × three training seeds).
 
-Values marked as pending must be resolved after a smoke test and before the
-protocol status changes to `frozen`.
+## Dataset and split
 
-## Shared experiment rules
+Fashion-MNIST provides 60,000 official training images and 10,000 official test
+images. The official training set is divided into a saved, stratified split:
 
-All five required models use Fashion-MNIST, one saved stratified split, the same
-evaluation implementation, the same checkpoint rule, and the same timing method.
-MNIST may be used for debugging only and must not appear in the main comparison.
+- 50,000 training images;
+- 10,000 validation images;
+- split seed `42`;
+- exactly 5,000 training and 1,000 validation images per class.
 
-The official 60,000-sample training set is split into 54,000 training and 6,000
-validation samples with split seed `42`. The official 10,000-sample test set is
-kept unchanged. Changing the training seed must not recreate the split.
+The test set remains unchanged. The committed manifest is
+`assignment1/configs/splits/fashion_mnist_train50000_val10000_seed42.json`.
+Changing a training seed must not recreate this partition.
 
-The development run uses seed `42`. Main experiments are planned for seeds
-`42`, `123`, and `2026`, with mean and standard deviation reported across runs.
-If compute limitations force a smaller plan, the change and its limitation must
-be documented before inspecting final test results.
+## Reproducibility
 
-## Preprocessing
+The main training seeds are `42`, `123`, and `2026`. They control model
+initialization, dropout, and training-loader order. Mean and sample standard
+deviation are reported across the three runs.
 
-Inputs have shape `[batch, 1, 28, 28]`. Normalization statistics must be measured
-using only the final training subset; validation and test samples must not
-contribute to them. Data augmentation is disabled in the initial controlled
-comparison. Any later augmentation experiment must be reported separately.
+Inputs have shape `[batch, 1, 28, 28]` and are scaled to `[0, 1]`. The saved
+50,000-image training subset has mean `0.2862758040` and standard deviation
+`0.3531853259`. Additional normalization and data augmentation are disabled.
 
 ## Training policy
 
-Architecture and training parameters belong in `assignment1/configs/models/`.
-Each model currently starts with batch size 128, at most 50 epochs, cross-entropy
-loss, and Adam with learning rate `0.001` and weight decay `0.0001`. Early stopping
-monitors validation macro-F1 with patience 7.
+Every current model uses:
 
-These are starting values rather than claims that one training recipe is optimal
-for every architecture. They may be adjusted independently during development,
-but every final value must remain in the corresponding model YAML and be reported
-with that model's results. Dataset split, run seeds, evaluation, checkpoint
-selection, and timing rules remain shared.
+- batch size `128`;
+- at most `100` epochs;
+- cross-entropy loss;
+- Adam with learning rate `0.001` and weight decay `0.0001`;
+- no learning-rate scheduler;
+- early stopping on validation macro-F1 with patience `15` and
+  `min_delta=0.0001`.
 
-## Model selection and test policy
+The best checkpoint is selected by validation macro-F1. Values within
+`min_delta` use lower validation loss as the tie-break; an exact remaining tie
+keeps the earlier epoch.
 
-The best checkpoint is selected by maximum validation macro-F1. Ties are broken
-by lower validation loss and then by the earlier epoch. The official test set is
-evaluated only after model and checkpoint selection; it must not be used for
-hyperparameter tuning or early stopping.
+## Test-set policy
 
-Required metrics are accuracy and macro-F1. The final submission must also report
-parameter count, training time, inference time, learning curves, confusion
-matrices, and representative correct and incorrect predictions.
+The official test set is not used for optimization, early stopping, or
+hyperparameter selection. `evaluate.py` requires `--allow-test`, rejects smoke
+tests on the official test set, reads the training seed from the checkpoint, and
+rejects seed, model, preprocessing, or split mismatches.
 
-## Timing policy
+Accuracy and macro-F1 are the required predictive metrics. Parameter count,
+training time, inference time, learning curves, confusion matrices, and
+representative predictions are also retained. Repeated evaluation of the same
+`(model, seed, checkpoint)` is counted only once in aggregate statistics.
 
-Inference timing uses float32 forward passes, five warm-up batches, and three
-measurement repetitions. Before main runs, the group must record the benchmark
-machine, accelerator, framework versions, inference batch size, and device
-synchronization method. Runtime comparisons are valid only on the same hardware
-and with the same measurement procedure.
+## Checkpoint and timing policy
+
+Best and last checkpoints are written atomically through a temporary file and
+replacement. Checkpoint binaries stay local; portable metrics and figures are
+stored in `assignment1/results/benchmark/`.
+
+Inference timing uses float32 forward passes, five warm-up batches, three
+measurement repetitions, and CUDA synchronization around each timed pass. All
+reported milestone runs use an NVIDIA GeForce RTX 4050 Laptop GPU and batch
+size 128. Runtime comparisons apply only to this environment and procedure.
 
 ## Configuration ownership
 
 ```text
 assignment1/configs/protocol.yaml
-    Shared data, reproducibility, evaluation, checkpoint and timing rules
+    Shared data, reproducibility, evaluation, checkpoint, timing and paths
 
 assignment1/configs/models/*.yaml
-    Architecture-specific and training parameters
+    Architecture and training settings
 
 assignment1/configs/splits/
     Saved train/validation split manifest
 ```
 
-The training command loads a model YAML file and then resolves its
-`protocol_file`. The resolved configuration and Git commit should be copied into
-each main-run result directory.
+## Verification checklist
 
-## Decisions still required before freeze
-
-- Measure and record normalization mean and standard deviation from the training split.
-- Confirm a feasible batch size for each model and record it in its YAML file.
-- Record the exact benchmark CPU/GPU and software versions.
-- Confirm that deterministic execution is supported by the selected operations.
-- Estimate whether all 15 planned main runs fit the available compute budget.
-- Add member names to `approved_by` and change the protocol status to `frozen`.
+- [x] Save and validate the 50,000/10,000 stratified split.
+- [x] Measure statistics only on the training subset.
+- [x] Train Linear and MLP with all three training seeds.
+- [x] Evaluate six selected checkpoints on the official test set.
+- [x] Run the 13-test unit suite.
+- [x] Record the benchmark hardware and package versions.
+- [ ] Obtain group review and populate `approved_by` before changing protocol
+  status to `frozen`.
 
 ## Change control
 
-Before the freeze, update the relevant YAML and record the reason in the Pull
-Request. After the freeze, any change that affects comparability requires rerunning
-the affected model and documenting the change. Never change a value only because a
-test-set result looks unfavorable.
+After the protocol is frozen, a change to the split, preprocessing, optimizer,
+early stopping, or evaluation procedure requires rerunning every affected model.
+Test results must not be used to choose a favorable configuration.
