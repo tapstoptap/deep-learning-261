@@ -245,7 +245,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--out", type=Path, default=Path("data"))
     parser.add_argument("--split-file", type=Path, default=None)
     parser.add_argument("--split-seed", type=int, default=42)
-    parser.add_argument("--validation-size", type=int, default=6000)
+    parser.add_argument("--validation-size", type=int, default=10000)
     parser.add_argument("--download", action="store_true")
     parser.add_argument("--calculate-normalization", action="store_true")
     return parser.parse_args()

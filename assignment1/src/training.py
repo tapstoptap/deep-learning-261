@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 import torch
 from torch import nn
@@ -142,23 +144,41 @@ def save_checkpoint(
     config: dict[str, Any],
 ) -> None:
     checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
-    torch.save(
-        {
-            "epoch": epoch,
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-            "validation_metrics": validation_metrics,
-            "config": config,
-        },
-        checkpoint_path,
+    checkpoint = {
+        "epoch": epoch,
+        "model_state_dict": model.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "validation_metrics": validation_metrics,
+        "config": config,
+    }
+    temporary_path = checkpoint_path.with_name(
+        f".{checkpoint_path.name}.{uuid4().hex}.tmp"
     )
+    try:
+        torch.save(checkpoint, temporary_path)
+        os.replace(temporary_path, checkpoint_path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+def load_checkpoint(
+    checkpoint_path: Path, device: torch.device
+) -> dict[str, Any]:
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    if not isinstance(checkpoint, dict) or "model_state_dict" not in checkpoint:
+        raise ValueError(f"Invalid checkpoint: {checkpoint_path}")
+    return checkpoint
+
+
+def load_checkpoint_into_model(
+    model: nn.Module, checkpoint: dict[str, Any]
+) -> None:
+    model.load_state_dict(checkpoint["model_state_dict"])
 
 
 def load_model_checkpoint(
     model: nn.Module, checkpoint_path: Path, device: torch.device
 ) -> dict[str, Any]:
-    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
-    if "model_state_dict" not in checkpoint:
-        raise ValueError(f"Invalid checkpoint: {checkpoint_path}")
-    model.load_state_dict(checkpoint["model_state_dict"])
+    checkpoint = load_checkpoint(checkpoint_path, device)
+    load_checkpoint_into_model(model, checkpoint)
     return checkpoint

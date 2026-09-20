@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import csv
 import json
 import statistics
@@ -20,7 +21,7 @@ from datasets.fashion_mnist import (
     create_data_loaders,
 )
 from models import count_trainable_parameters, create_model
-from training import evaluate_one_epoch, load_model_checkpoint
+from training import evaluate_one_epoch, load_checkpoint, load_checkpoint_into_model
 from utils.metrics import calculate_confusion_matrix
 from utils.plots import (
     collect_prediction_examples,
@@ -42,7 +43,83 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--output-dir")
     parser.add_argument("--download", action="store_true")
     parser.add_argument("--smoke-test", action="store_true")
+    parser.add_argument(
+        "--allow-test",
+        action="store_true",
+        help="Confirm that model selection is complete and the official test set may be used.",
+    )
     return parser.parse_args()
+
+
+def validate_test_evaluation_request(smoke_test: bool, allow_test: bool) -> None:
+    if smoke_test:
+        raise ValueError(
+            "Smoke tests must not use the official test set. Use training/validation data instead."
+        )
+    if not allow_test:
+        raise ValueError(
+            "Official test evaluation requires --allow-test after model selection is complete."
+        )
+
+
+def get_checkpoint_seed(
+    checkpoint: dict[str, Any], requested_seed: int | None
+) -> int:
+    checkpoint_config = checkpoint.get("config")
+    if not isinstance(checkpoint_config, dict):
+        raise ValueError("Checkpoint does not contain its resolved config")
+
+    checkpoint_seed = checkpoint_config.get("run", {}).get("seed")
+    if not isinstance(checkpoint_seed, int):
+        raise ValueError("Checkpoint does not contain a valid run seed")
+
+    configured_seed = checkpoint_config.get("reproducibility", {}).get(
+        "development_seed"
+    )
+    if configured_seed is not None and configured_seed != checkpoint_seed:
+        raise ValueError("Checkpoint run seed does not match its resolved config")
+    if requested_seed is not None and requested_seed != checkpoint_seed:
+        raise ValueError(
+            f"Requested seed {requested_seed} does not match checkpoint seed {checkpoint_seed}"
+        )
+    return checkpoint_seed
+
+
+def validate_checkpoint_config(
+    checkpoint: dict[str, Any],
+    current_config: dict[str, Any],
+    current_split_hash: str | None = None,
+) -> None:
+    checkpoint_config = checkpoint.get("config")
+    if not isinstance(checkpoint_config, dict):
+        raise ValueError("Checkpoint does not contain its resolved config")
+    if checkpoint_config.get("model") != current_config.get("model"):
+        raise ValueError("The checkpoint model config does not match --config")
+    if effective_preprocessing(checkpoint_config) != effective_preprocessing(
+        current_config
+    ):
+        raise ValueError("The checkpoint preprocessing does not match --config")
+
+    saved_split_hash = checkpoint_config.get("run", {}).get(
+        "split_manifest_sha256"
+    )
+    if (
+        current_split_hash is not None
+        and saved_split_hash is not None
+        and saved_split_hash != current_split_hash
+    ):
+        raise ValueError("The current data split does not match the checkpoint")
+
+
+def effective_preprocessing(config: dict[str, Any]) -> dict[str, Any]:
+    preprocessing = copy.deepcopy(config.get("preprocessing", {}))
+    normalization = preprocessing.get("normalization", {})
+    if not normalization.get("enabled", False):
+        preprocessing["normalization"] = {"enabled": False}
+    augmentation = preprocessing.get("augmentation", {})
+    if not augmentation.get("enabled", False):
+        preprocessing["augmentation"] = {"enabled": False}
+    return preprocessing
 
 
 def synchronize_device(device: torch.device) -> None:
@@ -120,20 +197,24 @@ def save_predictions(
 
 def main() -> None:
     arguments = parse_arguments()
+    validate_test_evaluation_request(arguments.smoke_test, arguments.allow_test)
     assignment_root = Path(__file__).resolve().parent.parent
     repository_root = assignment_root.parent
 
     config = load_experiment_config(arguments.config)
+    device = choose_device(arguments.device)
+    checkpoint_path = arguments.checkpoint.resolve()
+    checkpoint = load_checkpoint(checkpoint_path, device)
+    seed = get_checkpoint_seed(checkpoint, arguments.seed)
     config = apply_training_overrides(
         config,
-        seed=arguments.seed,
+        seed=seed,
         batch_size=arguments.batch_size,
         num_workers=arguments.num_workers,
         output_dir=arguments.output_dir,
     )
-    seed = config["reproducibility"]["development_seed"]
+    validate_checkpoint_config(checkpoint, config)
     set_random_seed(seed, config["reproducibility"]["deterministic"])
-    device = choose_device(arguments.device)
 
     data_loaders = create_data_loaders(
         config=config,
@@ -141,25 +222,15 @@ def main() -> None:
         seed=seed,
         download=arguments.download,
     )
+    validate_checkpoint_config(
+        checkpoint,
+        config,
+        calculate_split_manifest_hash(data_loaders.split_manifest),
+    )
     model = create_model(config["model"]).to(device)
-    checkpoint_path = arguments.checkpoint.resolve()
-    checkpoint = load_model_checkpoint(model, checkpoint_path, device)
-    checkpoint_config = checkpoint.get("config")
-    if checkpoint_config:
-        if checkpoint_config.get("model") != config.get("model"):
-            raise ValueError("The checkpoint model config does not match --config")
-        if checkpoint_config.get("preprocessing") != config.get("preprocessing"):
-            raise ValueError("The checkpoint preprocessing does not match --config")
-        saved_split_hash = checkpoint_config.get("run", {}).get(
-            "split_manifest_sha256"
-        )
-        current_split_hash = calculate_split_manifest_hash(
-            data_loaders.split_manifest
-        )
-        if saved_split_hash and saved_split_hash != current_split_hash:
-            raise ValueError("The current data split does not match the checkpoint")
+    load_checkpoint_into_model(model, checkpoint)
 
-    max_batches = 2 if arguments.smoke_test else None
+    max_batches = None
     loss_function = nn.CrossEntropyLoss()
     labels = config["evaluation"]["labels"]
     test_metrics, targets, predictions = evaluate_one_epoch(
@@ -177,12 +248,8 @@ def main() -> None:
         model=model,
         data_loader=data_loaders.test,
         device=device,
-        warmup_batches=min(timing_config["warmup_batches"], 1)
-        if arguments.smoke_test
-        else timing_config["warmup_batches"],
-        measurement_repeats=1
-        if arguments.smoke_test
-        else timing_config["measurement_repeats"],
+        warmup_batches=timing_config["warmup_batches"],
+        measurement_repeats=timing_config["measurement_repeats"],
         max_batches=max_batches,
     )
 

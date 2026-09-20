@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import statistics
 from collections import defaultdict
 from pathlib import Path
@@ -52,7 +53,7 @@ def read_evaluation_results(
     training_times = find_training_times(results_directory)
     evaluations: list[dict[str, Any]] = []
 
-    for result_path in results_directory.rglob("test_results.json"):
+    for result_path in sorted(results_directory.rglob("test_results.json")):
         result = load_json(result_path)
         if result.get("smoke_test", False) and not include_smoke_tests:
             continue
@@ -63,7 +64,21 @@ def read_evaluation_results(
     return evaluations
 
 
+def deduplicate_evaluations(
+    evaluations: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    evaluations_by_run: dict[tuple[str, int, str], dict[str, Any]] = {}
+    for evaluation in evaluations:
+        checkpoint_path = os.path.normcase(
+            str(Path(evaluation["checkpoint"]).resolve())
+        )
+        run_key = (evaluation["model"], int(evaluation["seed"]), checkpoint_path)
+        evaluations_by_run[run_key] = evaluation
+    return list(evaluations_by_run.values())
+
+
 def summarize_by_model(evaluations: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    evaluations = deduplicate_evaluations(evaluations)
     evaluations_by_model: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for evaluation in evaluations:
         evaluations_by_model[evaluation["model"]].append(evaluation)
