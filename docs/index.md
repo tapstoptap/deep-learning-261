@@ -27,12 +27,17 @@ title: Home
 
 ## Assignments
 - [Assignment 1 — Foundations of Deep Learning Pipelines and Architectures](assignment1.md)
+- [Assignment 1 experiment protocol](assignment1-experiment-protocol.md)
 - [Assignment 2 — Deep Learning on Large-Scale Data and Specialized Tasks](assignment2.md)
 - [Assignment 3 — Multimodal Deep Learning](assignment3.md)
+
+The current Assignment 1 milestone reports Linear and MLP baselines on a fixed
+50,000/10,000 Fashion-MNIST train/validation split over three training seeds.
 
 ## AI Usage Disclosure
 Summary of AI tool use across all three assignments. Full log: [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md).
 
-Generative AI was used to review the repository structure and to draft the initial
-Assignment 1 configuration and protocol documentation. All suggestions and
-experimental settings remain subject to student review before adoption.
+Generative AI was used to review the repository structure and assist with
+Assignment 1 configuration, implementation, tests, result analysis, and
+milestone documentation. Students executed and checked the experiments locally and remain
+responsible for every submitted setting, result, and conclusion.

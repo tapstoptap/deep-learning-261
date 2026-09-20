@@ -1,0 +1,30 @@
+[
+  {
+    "model": "linear",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "accuracy_mean": 0.8458,
+    "accuracy_std": 0.0010392304845413401,
+    "macro_f1_mean": 0.8447656262267784,
+    "macro_f1_std": 0.0013685645292927497,
+    "trainable_parameters": 7850,
+    "training_time_seconds_mean": 250.21763089999635,
+    "training_time_seconds_std": 19.719583551422122,
+    "inference_ms_per_sample_mean": 0.0010863222194732063,
+    "inference_ms_per_sample_std": 1.0730921606891519e-05
+  },
+  {
+    "model": "mlp",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "accuracy_mean": 0.8917666666666667,
+    "accuracy_std": 0.002100793500878488,
+    "macro_f1_mean": 0.8915137022743429,
+    "macro_f1_std": 0.002188069960969817,
+    "trainable_parameters": 235146,
+    "training_time_seconds_mean": 307.1951448333372,
+    "training_time_seconds_std": 81.71945456246094,
+    "inference_ms_per_sample_mean": 0.0025718877829300863,
+    "inference_ms_per_sample_std": 8.968690075570548e-05
+  }
+]

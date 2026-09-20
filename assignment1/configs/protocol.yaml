@@ -1,5 +1,5 @@
 # Shared experiment contract for every Assignment 1 model.
-# Status remains draft until the group reviews the smoke-test results.
+# Status remains draft until the group reviews the milestone results.
 
 protocol:
   id: a1
@@ -9,23 +9,23 @@ protocol:
 data:
   dataset: fashion_mnist
   root: data
-  train_size: 54000
-  validation_size: 6000
+  train_size: 50000
+  validation_size: 10000
   test_size: 10000
-  validation_ratio: 0.10
+  validation_ratio: 0.1666666667
   stratified: true
   split_seed: 42
-  split_file: configs/splits/fashion_mnist_seed42.json
+  split_file: configs/splits/fashion_mnist_train50000_val10000_seed42.json
 
 preprocessing:
   image_size: [28, 28]
   channels: 1
   normalization:
     enabled: false
-    # Measure on the final 54,000-sample training subset before protocol freeze.
-    # Null means the value is still pending.
-    mean: null
-    std: null
+    # Measured on the saved 50,000-sample training subset. The main benchmark
+    # keeps normalization disabled; these values are recorded for reproducibility.
+    mean: 0.28627580404281616
+    std: 0.3531853258609772
   augmentation:
     enabled: false
 
@@ -53,7 +53,7 @@ checkpoint:
   evaluate: best
 
 timing:
-  benchmark_device: null
+  benchmark_device: NVIDIA GeForce RTX 4050 Laptop GPU
   precision: float32
   scope: forward_only
   warmup_batches: 5
