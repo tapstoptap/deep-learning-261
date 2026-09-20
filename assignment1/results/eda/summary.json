@@ -1,0 +1,40 @@
+{
+  "dataset": "FashionMNIST",
+  "image_shape": [
+    1,
+    28,
+    28
+  ],
+  "number_of_classes": 10,
+  "official_training_samples": 60000,
+  "training_samples": 54000,
+  "validation_samples": 6000,
+  "test_samples": 10000,
+  "training_class_counts": {
+    "0": 5400,
+    "1": 5400,
+    "2": 5400,
+    "3": 5400,
+    "4": 5400,
+    "5": 5400,
+    "6": 5400,
+    "7": 5400,
+    "8": 5400,
+    "9": 5400
+  },
+  "validation_class_counts": {
+    "0": 600,
+    "1": 600,
+    "2": 600,
+    "3": 600,
+    "4": 600,
+    "5": 600,
+    "6": 600,
+    "7": 600,
+    "8": 600,
+    "9": 600
+  },
+  "training_subset_mean": 0.28620898723602295,
+  "training_subset_std": 0.35315975546836853,
+  "split_seed": 42
+}
