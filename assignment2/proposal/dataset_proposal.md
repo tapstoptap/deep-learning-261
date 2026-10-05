@@ -12,7 +12,7 @@
 L. Bossard, M. Guillaumin, and L. Van Gool,  
 "Food-101 — Mining Discriminative Components with Random Forests,"  
 European Conference on Computer Vision (ECCV), 2014.  
-**Paper link:** https://link.springer.com/chapter/10.1007/978-3-319-10599-4_1
+**Paper link:** https://link.springer.com/chapter/10.1007/978-3-319-10599-4_29
 
 **Version:** Food-101 original dataset release.  
 The exact dataset loader/version used during implementation will be
