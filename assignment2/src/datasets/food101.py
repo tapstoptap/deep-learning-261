@@ -231,12 +231,31 @@ def create_data_loaders(
 
 
 def download_food101(destination: str | Path) -> None:
-    """Download the official Food-101 dataset via torchvision."""
+    """Download and extract the official Food-101 dataset (~5GB)."""
+    import shutil
+    from torchvision.datasets.utils import download_and_extract_archive
+
     dest = Path(destination)
     dest.mkdir(parents=True, exist_ok=True)
-    print(f"Downloading Food-101 dataset to {dest} via torchvision...")
-    tv_datasets.Food101(root=str(dest), split="train", download=True)
-    print("Download and extraction completed.")
+    target_dir = dest / "food-101"
+
+    # If target directory exists but is empty/corrupt, clean it up first
+    meta_classes = target_dir / "meta" / "classes.txt"
+    if target_dir.exists():
+        if not meta_classes.exists() or meta_classes.stat().st_size == 0:
+            print(f"Found incomplete or empty dataset directory at {target_dir}. Cleaning up...")
+            shutil.rmtree(target_dir, ignore_errors=True)
+
+    print(f"Downloading Food-101 dataset (~5GB) to {dest}...")
+    url = "http://data.vision.ee.ethz.ch/cvl/food-101.tar.gz"
+    md5 = "85eeb7614ecfb77eab51a12226b4ba85"
+    download_and_extract_archive(
+        url=url,
+        download_root=str(dest),
+        extract_root=str(dest),
+        md5=md5,
+    )
+    print(f"Download and extraction completed successfully into {target_dir}.")
 
 
 if __name__ == "__main__":
