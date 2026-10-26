@@ -1,0 +1,27 @@
+{
+  "model": "resnet50",
+  "mode": "full_finetune",
+  "seed": 42,
+  "device": "cuda (Tesla P100, Kaggle)",
+  "total_epochs": 15,
+  "best_val_macro_f1": 0.8145,
+  "best_val_accuracy": 0.815,
+  "final_train_accuracy": 0.9988,
+  "test_accuracy": 0.8617,
+  "test_macro_f1": 0.861,
+  "test_loss": 0.6494,
+  "total_training_time_sec": 16161.0,
+  "total_training_time_min": 269.35,
+  "parameters": {
+    "total": 23714981,
+    "trainable": 23714981,
+    "frozen": 0
+  },
+  "dataset": {
+    "name": "Food-101",
+    "classes": 101,
+    "train_samples": 68175,
+    "val_samples": 7575,
+    "test_samples": 25250
+  }
+}

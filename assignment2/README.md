@@ -64,6 +64,6 @@ python src/evaluate.py --config configs/pretrained.yaml --checkpoint checkpoints
 ## Checkpoints & Experiments Summary
 | Model | Config | Status | Checkpoint | Val Macro-F1 | Test Acc | Test Macro-F1 |
 |---|---|---|---|---:|---:|---:|
-| Simple CNN (Scratch) | `configs/baseline.yaml` | Completed (20 ep, 173m) | `checkpoints/baseline/simple_cnn_best.pt` | 46.48% | TBD | TBD |
-| ResNet-50 (Frozen Backbone) | `configs/pretrained_frozen.yaml` | In progress | `checkpoints/resnet50_frozen/resnet50_best.pt` | TBD | TBD | TBD |
-| ResNet-50 (Fine-tuned) | `configs/pretrained.yaml` | Pending | `checkpoints/resnet50_finetune/resnet50_best.pt` | TBD | TBD | TBD |
+| Simple CNN (Scratch) | `configs/baseline.yaml` | ✅ Completed (20 ep, 163m) | `checkpoints/baseline/simple_cnn_best.pt` | 46.38% | 51.96% | 51.21% |
+| ResNet-50 (Frozen Backbone) | `configs/pretrained_frozen.yaml` | ✅ Completed (15 ep, 150m) | `checkpoints/resnet50_frozen/resnet50_best.pt` | 61.55% | 66.70% | 66.36% |
+| ResNet-50 (Full Fine-tuned) | `configs/pretrained.yaml` | ✅ Completed (15 ep, 269m) | `checkpoints/resnet50_finetune/resnet50_best.pt` | **81.45%** | **86.17%** | **86.10%** |

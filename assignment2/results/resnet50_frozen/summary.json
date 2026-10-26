@@ -1,0 +1,14 @@
+{
+  "model": "resnet50",
+  "seed": 42,
+  "device": "cuda",
+  "total_epochs": 15,
+  "best_val_macro_f1": 0.6154776003677022,
+  "total_training_time_sec": 8989.125683784485,
+  "parameters": {
+    "total": 23714981,
+    "trainable": 206949,
+    "frozen": 23508032
+  },
+  "best_checkpoint": "/kaggle/working/deep-learning-261/assignment2/checkpoints/resnet50_frozen/resnet50_best.pt"
+}

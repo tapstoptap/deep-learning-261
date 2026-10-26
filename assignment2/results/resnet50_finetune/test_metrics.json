@@ -1,0 +1,60 @@
+{
+  "split": "test",
+  "samples": 25250,
+  "loss": 0.6494,
+  "accuracy": 0.8617227722772278,
+  "macro_f1": 0.8610432345679012,
+  "checkpoint": "/kaggle/working/deep-learning-261/assignment2/checkpoints/resnet50_finetune/resnet50_best.pt",
+  "top_confusions": [
+    {
+      "true_class": "filet_mignon",
+      "pred_class": "steak",
+      "count": 36
+    },
+    {
+      "true_class": "steak",
+      "pred_class": "filet_mignon",
+      "count": 32
+    },
+    {
+      "true_class": "tuna_tartare",
+      "pred_class": "beef_tartare",
+      "count": 25
+    },
+    {
+      "true_class": "chocolate_cake",
+      "pred_class": "chocolate_mousse",
+      "count": 21
+    },
+    {
+      "true_class": "steak",
+      "pred_class": "pork_chop",
+      "count": 21
+    },
+    {
+      "true_class": "pork_chop",
+      "pred_class": "filet_mignon",
+      "count": 19
+    },
+    {
+      "true_class": "pork_chop",
+      "pred_class": "steak",
+      "count": 19
+    },
+    {
+      "true_class": "steak",
+      "pred_class": "prime_rib",
+      "count": 17
+    },
+    {
+      "true_class": "bread_pudding",
+      "pred_class": "apple_pie",
+      "count": 16
+    },
+    {
+      "true_class": "chocolate_mousse",
+      "pred_class": "chocolate_cake",
+      "count": 16
+    }
+  ]
+}
