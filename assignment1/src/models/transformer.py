@@ -3,6 +3,8 @@ from __future__ import annotations
 import torch
 from torch import nn
 
+from .representations import images_to_sequence
+
 
 class TransformerImageClassifier(nn.Module):
     def __init__(
@@ -17,12 +19,14 @@ class TransformerImageClassifier(nn.Module):
         dropout: float,
         pooling: str,
         num_classes: int,
+        patch_size: int = 4,
     ) -> None:
         super().__init__()
         if embedding_dim % num_heads != 0:
             raise ValueError("embedding_dim must be divisible by num_heads")
 
         self.representation = representation
+        self.patch_size = patch_size
         self.pooling = pooling
         self.input_projection = nn.Linear(token_input_dim, embedding_dim)
         self.positional_embedding = nn.Parameter(
@@ -44,12 +48,7 @@ class TransformerImageClassifier(nn.Module):
         self.classifier = nn.Linear(embedding_dim, num_classes)
 
     def images_to_tokens(self, images: torch.Tensor) -> torch.Tensor:
-        image_rows = images.squeeze(1)
-        if self.representation == "image_rows":
-            return image_rows
-        if self.representation == "image_columns":
-            return image_rows.transpose(1, 2)
-        raise ValueError(f"Unsupported image representation: {self.representation}")
+        return images_to_sequence(images, self.representation, self.patch_size)
 
     def forward(self, images: torch.Tensor) -> torch.Tensor:
         tokens = self.images_to_tokens(images)

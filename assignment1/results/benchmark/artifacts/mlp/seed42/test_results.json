@@ -1,0 +1,29 @@
+{
+  "model": "mlp",
+  "checkpoint": "D:\\bk_study_stuff\\261\\DL\\deep-learning-261\\assignment1\\checkpoints\\mlp\\mlp_norm_seed42_20261025_193345\\best.pt",
+  "checkpoint_epoch": 42,
+  "checkpoint_validation_metrics": {
+    "accuracy": 0.9069,
+    "macro_f1": 0.906533849593543,
+    "loss": 0.2947237496256828
+  },
+  "test_metrics": {
+    "accuracy": 0.893,
+    "macro_f1": 0.8927590730289238,
+    "loss": 0.34947008535563945
+  },
+  "trainable_parameters": 235146,
+  "inference_timing": {
+    "scope": "forward_only",
+    "measurement_repeats": 3,
+    "samples_per_repeat": 10000,
+    "mean_seconds": 0.031333566565687455,
+    "standard_deviation_seconds": 0.00489727052541529,
+    "milliseconds_per_sample": 0.0031333566565687455
+  },
+  "device": "cuda",
+  "device_description": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "seed": 42,
+  "git_commit": "6e68bc838d26feb2491efc7d17c1cf7822b743d5",
+  "smoke_test": false
+}

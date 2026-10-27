@@ -21,9 +21,9 @@ preprocessing:
   image_size: [28, 28]
   channels: 1
   normalization:
-    enabled: false
-    # Measured on the saved 50,000-sample training subset. The main benchmark
-    # keeps normalization disabled; these values are recorded for reproducibility.
+    enabled: true
+    # Measured on the saved 50,000-sample training subset and applied to the
+    # training, validation, and test inputs.
     mean: 0.28627580404281616
     std: 0.3531853258609772
   augmentation:
