@@ -11,11 +11,15 @@ VNU-HCM, Faculty of Computer Science and Engineering.
 | Nguyen Thanh The | 2453191 | [Themenli1](https://github.com/Themenli1) |
 | Nguyen Minh Quang | 2453052 | [quangnguyencomeng](https://github.com/quangnguyencomeng) |
 
+For Assignment 1, Nguyen Minh Quang (2453052) is the sole author and
+contributor. Nguyen Minh Phuc and Nguyen Thanh The did not contribute to
+Assignment 1.
+
 ## Assignment status
 
 | Assignment | Status | Milestone |
 |---|---|---|
-| Assignment 1 | Linear and MLP baseline complete | M1 — 23 Sep 2026 |
+| Assignment 1 | Five model families benchmarked | 20 Oct 2026 |
 | Assignment 2 | Planned | Proposal — 7 Oct 2026 |
 | Assignment 3 | Planned | Proposal — 18 Nov 2026 |
 
@@ -27,15 +31,18 @@ VNU-HCM, Faculty of Computer Science and Engineering.
 
 ## Assignment 1 milestone
 
-The current benchmark uses Fashion-MNIST with a saved stratified split of
-50,000 training and 10,000 validation images. Linear and MLP models were trained
-with seeds `42`, `123`, and `2026`; the official 10,000-image test set was used
-only after checkpoint selection.
+The benchmark uses Fashion-MNIST with a saved stratified split of 50,000
+training and 10,000 validation images. Linear, MLP, CNN, GRU, and Transformer
+models were trained with seeds `42`, `123`, and `2026`; the official
+10,000-image test set was used after checkpoint selection.
 
 | Model | Test accuracy | Test macro-F1 |
 |---|---:|---:|
-| Linear | 84.58 ± 0.10% | 84.48 ± 0.14% |
-| MLP | **89.18 ± 0.21%** | **89.15 ± 0.22%** |
+| Linear | 84.31 ± 0.09% | 84.23 ± 0.06% |
+| MLP | 89.37 ± 0.11% | 89.31 ± 0.12% |
+| CNN | **92.22 ± 0.39%** | **92.20 ± 0.41%** |
+| GRU | 90.29 ± 0.19% | 90.26 ± 0.21% |
+| Transformer | 89.40 ± 0.09% | 89.37 ± 0.13% |
 
 ## Repository layout
 

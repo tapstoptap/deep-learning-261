@@ -1,9 +1,7 @@
 # Assignment 1 — Fashion-MNIST Benchmarks
 
-This directory contains the Assignment 1 training and evaluation pipeline. The
-23 September milestone reports the Linear and MLP baselines. CNN, RNN, and
-Transformer modules and configs remain available for later Assignment 1 work,
-but they are not included in the current result table.
+This directory contains the Assignment 1 training and evaluation pipeline and
+the five-family Fashion-MNIST benchmark: Linear, MLP, CNN, GRU, and Transformer.
 
 ## Dataset and protocol
 
@@ -26,7 +24,8 @@ split.
 - Maximum epochs: `100`.
 - Optimizer: Adam, learning rate `0.001`, weight decay `0.0001`.
 - Early stopping: validation macro-F1, patience `15`, `min_delta=0.0001`.
-- Augmentation, additional normalization, and learning-rate scheduling: disabled.
+- Mean/std normalization is enabled using statistics from the saved training
+  subset; augmentation and learning-rate scheduling are disabled.
 - Best-checkpoint tie-break: lower validation loss, then earlier epoch.
 
 Shared settings are in `configs/protocol.yaml`; model settings are in
@@ -60,11 +59,11 @@ Run the test suite:
 & $pythonUav -m unittest discover -s tests -v
 ```
 
-Train Linear and MLP for all three seeds:
+Train all five models for all three seeds:
 
 ```powershell
 $seeds = @(42, 123, 2026)
-$models = @("linear", "mlp")
+$models = @("linear", "mlp", "cnn", "rnn", "transformer")
 
 foreach ($seed in $seeds) {
     foreach ($model in $models) {
@@ -82,7 +81,7 @@ checkpoint; `--allow-test` explicitly confirms that model selection is complete.
 
 ```powershell
 $seeds = @(42, 123, 2026)
-$models = @("linear", "mlp")
+$models = @("linear", "mlp", "cnn", "rnn", "transformer")
 
 foreach ($seed in $seeds) {
     foreach ($model in $models) {
@@ -122,12 +121,16 @@ The table reports sample mean ± sample standard deviation over three seeds.
 
 | Model | Test accuracy | Test macro-F1 | Parameters |
 |---|---:|---:|---:|
-| Linear | 84.58 ± 0.10% | 84.48 ± 0.14% | 7,850 |
-| MLP | **89.18 ± 0.21%** | **89.15 ± 0.22%** | 235,146 |
+| Linear | 84.31 ± 0.09% | 84.23 ± 0.06% | 7,850 |
+| MLP | 89.37 ± 0.11% | 89.31 ± 0.12% | 235,146 |
+| CNN | **92.22 ± 0.39%** | **92.20 ± 0.41%** | 421,642 |
+| GRU (configured as `rnn`) | 90.29 ± 0.19% | 90.26 ± 0.21% | 61,962 |
+| Transformer | 89.40 ± 0.09% | 89.37 ± 0.13% | 71,242 |
 
-The MLP improves macro-F1 by approximately 4.67 percentage points over the
-linear baseline. Detailed per-seed metrics, histories, curves, confusion
-matrices, and prediction examples are in `results/benchmark/`.
+CNN has the highest mean test accuracy and macro-F1 in this comparison.
+Detailed per-seed metrics, histories, curves, confusion matrices, and prediction
+examples are in `results/benchmark/`. The Transformer seed 2026 run took much
+longer than its other seeds; inspect `run_metrics.csv` before comparing runtime.
 
 ## Output layout
 
@@ -136,11 +139,12 @@ results/
 ├── eda/
 ├── linear/                 # ignored raw runs and evaluations
 ├── mlp/                    # ignored raw runs and evaluations
+├── cnn/                    # ignored raw runs and evaluations
+├── rnn/                    # ignored raw runs and evaluations
+├── transformer/            # ignored raw runs and evaluations
 └── benchmark/              # tracked portable artifacts
 
-checkpoints/
-├── linear/                 # ignored checkpoint binaries
-└── mlp/
+checkpoints/                # ignored checkpoint binaries, grouped by model
 ```
 
 See the [experiment protocol](../docs/assignment1-experiment-protocol.md) and
