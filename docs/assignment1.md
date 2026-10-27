@@ -11,7 +11,7 @@ title: Assignment 1 — Model Comparison
 > A controlled comparison of five classifier families on Fashion-MNIST,
 > from a linear baseline to spatial and row-token architectures.
 
-[Download the report](../assignment1/report/DL_A1_report.pdf)
+[Download the report PDF](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment1/report/DL_A1_report.pdf)
 
 <div style="max-width: 900px; margin: 1rem 0 2rem;">
 <iframe width="100%" height="500" src="https://www.youtube.com/embed/nHcVq0U0Zc4" title="Assignment 1 presentation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>

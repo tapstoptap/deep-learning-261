@@ -37,6 +37,6 @@ Fashion-MNIST under a shared split and evaluation protocol.
 
 [Open the complete Assignment 1 page](assignment1)
 
-[Download the report](../assignment1/report/DL_A1_report.pdf)
+[Download the Assignment 1 report PDF](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment1/report/DL_A1_report.pdf)
 
 [Watch the presentation](https://youtu.be/nHcVq0U0Zc4)
