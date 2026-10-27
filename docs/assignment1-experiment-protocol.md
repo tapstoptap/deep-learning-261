@@ -12,7 +12,8 @@ Assignment 1 model families under the same shared rules.
 
 - Protocol ID: `a1`.
 - Status: executed draft with normalized preprocessing.
-- Approval: pending group review.
+- Approval: pending group review. Reviewer must change this field to
+  `approved` and populate `approved_by` after checking the protocol.
 - Completed main runs: fifteen (five models × three training seeds).
 
 ## Dataset and split
@@ -100,8 +101,9 @@ assignment1/configs/splits/
 - [x] Evaluate fifteen selected checkpoints on the official test set.
 - [x] Run the 13-test unit suite.
 - [x] Record the benchmark hardware and package versions.
-- [ ] Obtain group review and populate `approved_by` before changing protocol
-  status to `frozen`.
+- [ ] Reviewer changes `Approval` to `approved` and populates `approved_by`.
+- [ ] After approval, change protocol status to `frozen` before making any
+  protocol changes.
 
 ## Change control
 
