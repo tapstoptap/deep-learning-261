@@ -1,0 +1,19 @@
+{
+  "run_name": "mlp_norm_seed42_20261025_193345",
+  "model": "mlp",
+  "seed": 42,
+  "device": "cuda",
+  "device_description": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "trainable_parameters": 235146,
+  "epochs_completed": 57,
+  "best_epoch": 42,
+  "best_validation_metrics": {
+    "accuracy": 0.9069,
+    "macro_f1": 0.906533849593543,
+    "loss": 0.2947237496256828
+  },
+  "training_time_seconds": 1566.4711388999713,
+  "best_checkpoint": "D:\\bk_study_stuff\\261\\DL\\deep-learning-261\\assignment1\\checkpoints\\mlp\\mlp_norm_seed42_20261025_193345\\best.pt",
+  "last_checkpoint": "D:\\bk_study_stuff\\261\\DL\\deep-learning-261\\assignment1\\checkpoints\\mlp\\mlp_norm_seed42_20261025_193345\\last.pt",
+  "git_commit": "6e68bc838d26feb2491efc7d17c1cf7822b743d5"
+}

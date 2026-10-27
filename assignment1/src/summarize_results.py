@@ -9,6 +9,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from config import load_yaml_file
+
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -18,7 +20,18 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--output-file", type=Path, default=Path("results/model_comparison.csv")
     )
+    parser.add_argument(
+        "--curves-output",
+        type=Path,
+        help="Output PNG for the combined training curves (defaults beside --output-file)",
+    )
+    parser.add_argument("--no-curves", action="store_true")
     parser.add_argument("--include-smoke-tests", action="store_true")
+    parser.add_argument(
+        "--ablation",
+        action="store_true",
+        help="Summarize the GRU/Transformer representation ablation from training summaries.",
+    )
     return parser.parse_args()
 
 
@@ -135,6 +148,196 @@ def summarize_by_model(evaluations: list[dict[str, Any]]) -> list[dict[str, Any]
     return summaries
 
 
+def read_training_histories(
+    results_directory: Path, evaluations: list[dict[str, Any]]
+) -> dict[str, dict[int, list[dict[str, float]]]]:
+    """Match each evaluated checkpoint to its saved training history."""
+    histories: dict[str, dict[int, list[dict[str, float]]]] = defaultdict(dict)
+    required_fields = {
+        "epoch", "train_loss", "validation_loss", "train_macro_f1", "validation_macro_f1"
+    }
+
+    for evaluation in deduplicate_evaluations(evaluations):
+        model = str(evaluation["model"])
+        seed = int(evaluation["seed"])
+        if seed in histories[model]:
+            raise ValueError(f"Multiple checkpoints for {model}, seed {seed}; select one run")
+
+        checkpoint = Path(evaluation["checkpoint"])
+        run_directory = results_directory / model / checkpoint.parent.name
+        summary_path = run_directory / "summary.json"
+        history_path = run_directory / "history.csv"
+        if not summary_path.is_file() or not history_path.is_file():
+            raise FileNotFoundError(f"Training summary/history missing for {model}, seed {seed}: {run_directory}")
+        summary = load_json(summary_path)
+        if (
+            summary.get("model") != model
+            or int(summary.get("seed", -1)) != seed
+            or os.path.normcase(str(Path(summary["best_checkpoint"]).resolve()))
+            != os.path.normcase(str(checkpoint.resolve()))
+        ):
+            raise ValueError(f"Training history does not match evaluated checkpoint: {history_path}")
+
+        with history_path.open("r", newline="", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
+            if not required_fields.issubset(reader.fieldnames or []):
+                raise ValueError(f"Missing curve columns in {history_path}")
+            rows = list(reader)
+        if not rows or len(rows) != int(summary["epochs_completed"]):
+            raise ValueError(f"History length does not match training summary: {history_path}")
+        if [int(row["epoch"]) for row in rows] != list(range(1, len(rows) + 1)):
+            raise ValueError(f"Epochs are not contiguous in {history_path}")
+        histories[model][seed] = rows
+
+    seed_sets = {frozenset(model_histories) for model_histories in histories.values()}
+    if len(seed_sets) != 1:
+        raise ValueError("Models have different training seed sets; cannot compare their curves")
+    return dict(histories)
+
+
+def read_representation_ablation_runs(
+    results_directory: Path,
+    include_smoke_tests: bool,
+) -> list[dict[str, Any]]:
+    """Read training summaries for the sequence-representation ablation."""
+    runs_by_key: dict[tuple[str, str, int], dict[str, Any]] = {}
+    supported_models = {"rnn", "transformer"}
+    supported_representations = {
+        "image_rows",
+        "image_columns",
+        "image_patches",
+    }
+
+    for summary_path in sorted(results_directory.rglob("summary.json")):
+        summary = load_json(summary_path)
+        if summary.get("smoke_test", False) and not include_smoke_tests:
+            continue
+
+        resolved_config_path = summary_path.parent / "resolved_config.yaml"
+        if not resolved_config_path.is_file():
+            continue
+        resolved_config = load_yaml_file(resolved_config_path)
+        model_config = resolved_config.get("model", {})
+        model_name = model_config.get("name")
+        parameters = model_config.get("parameters", {})
+        representation = parameters.get("representation")
+        if model_name not in supported_models or representation not in supported_representations:
+            continue
+
+        seed = int(summary["seed"])
+        key = (str(model_name), str(representation), seed)
+        if key in runs_by_key:
+            previous = runs_by_key[key]["summary_file"]
+            raise ValueError(
+                "Multiple ablation runs found for "
+                f"{model_name}/{representation}, seed {seed}: {previous} and {summary_path}"
+            )
+
+        summary["summary_file"] = str(summary_path.resolve())
+        summary["resolved_config_file"] = str(resolved_config_path.resolve())
+        summary["variant"] = f"{model_name}/{representation}"
+        summary["model"] = str(model_name)
+        summary["representation"] = str(representation)
+        runs_by_key[key] = summary
+
+    runs = list(runs_by_key.values())
+    if not runs:
+        raise FileNotFoundError(
+            "No GRU/Transformer representation-ablation training summaries found "
+            f"under {results_directory.resolve()}"
+        )
+    return runs
+
+
+def summarize_representation_ablation(
+    runs: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    runs_by_variant: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for run in runs:
+        runs_by_variant[run["variant"]].append(run)
+
+    summaries: list[dict[str, Any]] = []
+    for variant in sorted(runs_by_variant):
+        variant_runs = sorted(runs_by_variant[variant], key=lambda item: int(item["seed"]))
+        validation_metrics = [
+            run.get("best_validation_metrics") or {} for run in variant_runs
+        ]
+        macro_f1_values = [float(metrics["macro_f1"]) for metrics in validation_metrics]
+        accuracy_values = [float(metrics["accuracy"]) for metrics in validation_metrics]
+        loss_values = [float(metrics["loss"]) for metrics in validation_metrics]
+        training_times = [float(run["training_time_seconds"]) for run in variant_runs]
+        best_epochs = [float(run["best_epoch"]) for run in variant_runs]
+
+        macro_f1_mean, macro_f1_std = calculate_mean_and_standard_deviation(macro_f1_values)
+        accuracy_mean, accuracy_std = calculate_mean_and_standard_deviation(accuracy_values)
+        loss_mean, loss_std = calculate_mean_and_standard_deviation(loss_values)
+        training_mean, training_std = calculate_mean_and_standard_deviation(training_times)
+        best_epoch_mean, best_epoch_std = calculate_mean_and_standard_deviation(best_epochs)
+
+        first_run = variant_runs[0]
+        summaries.append(
+            {
+                "model": first_run["model"],
+                "representation": first_run["representation"],
+                "variant": variant,
+                "runs": len(variant_runs),
+                "seeds": ",".join(str(run["seed"]) for run in variant_runs),
+                "validation_accuracy_mean": accuracy_mean,
+                "validation_accuracy_std": accuracy_std,
+                "validation_macro_f1_mean": macro_f1_mean,
+                "validation_macro_f1_std": macro_f1_std,
+                "validation_loss_mean": loss_mean,
+                "validation_loss_std": loss_std,
+                "trainable_parameters": first_run["trainable_parameters"],
+                "best_epoch_mean": best_epoch_mean,
+                "best_epoch_std": best_epoch_std,
+                "training_time_seconds_mean": training_mean,
+                "training_time_seconds_std": training_std,
+            }
+        )
+    return summaries
+
+
+def read_representation_ablation_histories(
+    runs: list[dict[str, Any]],
+) -> dict[str, dict[int, list[dict[str, float]]]]:
+    """Load and validate one training history per seed and representation."""
+    histories: dict[str, dict[int, list[dict[str, float]]]] = defaultdict(dict)
+    required_fields = {
+        "epoch",
+        "train_loss",
+        "validation_loss",
+        "train_macro_f1",
+        "validation_macro_f1",
+    }
+
+    for run in runs:
+        variant = str(run["variant"])
+        seed = int(run["seed"])
+        summary_path = Path(run["summary_file"])
+        history_path = summary_path.parent / "history.csv"
+        if not history_path.is_file():
+            raise FileNotFoundError(f"Training history missing: {history_path}")
+
+        with history_path.open("r", newline="", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
+            if not required_fields.issubset(reader.fieldnames or []):
+                raise ValueError(f"Missing curve columns in {history_path}")
+            rows = list(reader)
+        if not rows or len(rows) != int(run["epochs_completed"]):
+            raise ValueError(f"History length does not match training summary: {history_path}")
+        if [int(row["epoch"]) for row in rows] != list(range(1, len(rows) + 1)):
+            raise ValueError(f"Epochs are not contiguous in {history_path}")
+        if seed in histories[variant]:
+            raise ValueError(f"Multiple histories found for {variant}, seed {seed}")
+        histories[variant][seed] = rows
+
+    seed_sets = {frozenset(variant_histories) for variant_histories in histories.values()}
+    if len(seed_sets) != 1:
+        raise ValueError("Ablation variants have different training seed sets")
+    return dict(histories)
+
+
 def save_summary_csv(summaries: list[dict[str, Any]], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", newline="", encoding="utf-8") as file:
@@ -145,8 +348,40 @@ def save_summary_csv(summaries: list[dict[str, Any]], output_path: Path) -> None
 
 def main() -> None:
     arguments = parse_arguments()
+    results_directory = arguments.results_dir.resolve()
+
+    if arguments.ablation:
+        runs = read_representation_ablation_runs(
+            results_directory,
+            arguments.include_smoke_tests,
+        )
+        summaries = summarize_representation_ablation(runs)
+        histories = (
+            read_representation_ablation_histories(runs)
+            if not arguments.no_curves
+            else None
+        )
+        save_summary_csv(summaries, arguments.output_file)
+        json_output_path = arguments.output_file.with_suffix(".json")
+        with json_output_path.open("w", encoding="utf-8") as file:
+            json.dump(summaries, file, indent=2)
+
+        if histories is not None:
+            from utils.plots import save_representation_ablation_curves
+
+            curves_output = arguments.curves_output or arguments.output_file.with_name(
+                "representation_ablation_curves.png"
+            )
+            save_representation_ablation_curves(histories, curves_output)
+            print(f"Representation ablation curves: {curves_output.resolve()}")
+
+        print(json.dumps(summaries, indent=2))
+        print(f"Ablation CSV: {arguments.output_file.resolve()}")
+        print(f"Ablation JSON: {json_output_path.resolve()}")
+        return
+
     evaluations = read_evaluation_results(
-        arguments.results_dir.resolve(), arguments.include_smoke_tests
+        results_directory, arguments.include_smoke_tests
     )
     if not evaluations:
         raise FileNotFoundError(
@@ -154,10 +389,23 @@ def main() -> None:
         )
 
     summaries = summarize_by_model(evaluations)
+    histories = (
+        read_training_histories(results_directory, evaluations)
+        if not arguments.no_curves else None
+    )
     save_summary_csv(summaries, arguments.output_file)
     json_output_path = arguments.output_file.with_suffix(".json")
     with json_output_path.open("w", encoding="utf-8") as file:
         json.dump(summaries, file, indent=2)
+
+    if histories is not None:
+        from utils.plots import save_combined_training_curves
+
+        curves_output = arguments.curves_output or arguments.output_file.with_name(
+            "combined_training_curves.png"
+        )
+        save_combined_training_curves(histories, curves_output)
+        print(f"Combined training curves: {curves_output.resolve()}")
 
     print(json.dumps(summaries, indent=2))
     print(f"Comparison CSV: {arguments.output_file.resolve()}")

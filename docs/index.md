@@ -4,40 +4,39 @@ title: Home
 
 # Deep Learning and Its Applications — Course Project
 
-## Institutional Information
-- Ho Chi Minh City University of Technology (HCMUT) - VNU-HCM
-- Faculty of Computer Science and Engineering
+## Course Project · Semester 261
 
-## Course Information
-- Course: Deep Learning and Its Applications
-- Course code: CO3133
-- Semester: 261
-- Instructor: Lê Thành Sách
+Comparative experiments on deep learning architectures by **Group 99 — PTQ**.
 
-## Group Information
-### Group 99 — Group Name: PTQ
+| Course | Instructor | Faculty |
+|---|---|---|
+| CO3133 | Lê Thành Sách | Computer Science and Engineering, HCMUT |
 
-| Member | Student ID | Role / Contribution | GitHub |
-|---|---|---|---|
-| Nguyen Minh Phuc | 2453005 | Ideas & Techies  | [GitHub](https://github.com/tapstoptap) |
-| Nguyen Thanh The | 2453191 | Ideas & Techies | [GitHub](https://github.com/Themenli1) |
-| Nguyen Minh Quang | 2453052 | Ideas & Techies | [GitHub](https://github.com/quangnguyencomeng) |
+## Team
 
-**Code repository:** [GitHub](https://github.com/tapstoptap/deep-learning-261)
+| Member | Student ID | GitHub |
+|---|---:|---|
+| Nguyen Minh Phuc | 2453005 | [tapstoptap](https://github.com/tapstoptap) |
+| Nguyen Thanh The | 2453191 | [Themenli1](https://github.com/Themenli1) |
+| Nguyen Minh Quang | 2453052 | [quangnguyencomeng](https://github.com/quangnguyencomeng) |
 
-## Assignments
-- [Assignment 1 — Foundations of Deep Learning Pipelines and Architectures](assignment1.md)
-- [Assignment 1 experiment protocol](assignment1-experiment-protocol.md)
-- [Assignment 2 — Deep Learning on Large-Scale Data and Specialized Tasks](assignment2.md)
-- [Assignment 3 — Multimodal Deep Learning](assignment3.md)
+[View the source repository on GitHub](https://github.com/tapstoptap/deep-learning-261)
 
-The current Assignment 1 milestone reports Linear and MLP baselines on a fixed
-50,000/10,000 Fashion-MNIST train/validation split over three training seeds.
+---
+# Assignment 1
 
-## AI Usage Disclosure
-Summary of AI tool use across all three assignments. Full log: [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md).
+## Foundations of Deep Learning Pipelines and Architectures
 
-Generative AI was used to review the repository structure and assist with
-Assignment 1 configuration, implementation, tests, result analysis, and
-milestone documentation. Students executed and checked the experiments locally and remain
-responsible for every submitted setting, result, and conclusion.
+**Sole author:** Nguyen Minh Quang · 2453052
+
+Nguyen Minh Phuc and Nguyen Thanh The are members of the course project, but
+they did not contribute to Assignment 1.
+
+This assignment compares Linear, MLP, CNN, GRU, and Transformer classifiers on
+Fashion-MNIST under a shared split and evaluation protocol.
+
+[Open the complete Assignment 1 page](assignment1)
+
+[Download the report](../assignment1/report/DL_A1_report.pdf)
+
+[Watch the presentation](https://youtu.be/nHcVq0U0Zc4)

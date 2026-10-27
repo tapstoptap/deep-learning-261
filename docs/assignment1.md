@@ -1,140 +1,228 @@
 ---
-title: Assignment 1
+title: Assignment 1 — Model Comparison
 ---
 
-# Assignment 1 — Fashion-MNIST Baselines
+# Assignment 1
 
-## Linear and Multilayer Perceptron Classification
+## Foundations of Deep Learning Pipelines and Architectures
 
-**Group 99 — PTQ:** Nguyen Minh Phuc, Nguyen Thanh The, Nguyen Minh Quang
+**Nguyen Minh Quang · 2453052**
 
-## Milestone scope
+> A controlled comparison of five classifier families on Fashion-MNIST,
+> from a linear baseline to spatial and row-token architectures.
 
-The 23 September milestone establishes a reproducible Fashion-MNIST pipeline
-and compares two baseline classifiers: a linear model and a multilayer
-perceptron (MLP). CNN, RNN, and Transformer experiments are reserved for later
-Assignment 1 milestones and are not included in the current result table.
+[Download the report](../assignment1/report/DL_A1_report.pdf) · [Watch the presentation](https://youtu.be/nHcVq0U0Zc4)
 
-## Dataset and exploratory analysis
+## At a glance
 
-Fashion-MNIST contains grayscale `28 × 28` images from ten balanced clothing
-classes. A saved stratified split is created from the official training set:
+| Dataset | Input | Classes | Models |
+|---|---|---:|---|
+| Fashion-MNIST | grayscale 28 × 28 | 10 | Linear · MLP · CNN · GRU · Transformer |
 
-| Partition | Samples | Samples per class |
-|---|---:|---:|
-| Training | 50,000 | 5,000 |
-| Validation | 10,000 | 1,000 |
-| Official test | 10,000 | 1,000 |
+| Split | Training | Validation | Official test |
+|---|---|---:|---:|
+| Samples | 50,000 | 10,000 | 10,000 |
 
-The split seed is `42` and is fixed for every model and training seed. The
-training subset has mean `0.286276` and standard deviation `0.353185` after
-scaling pixels to `[0, 1]`. Additional normalization and augmentation are
-disabled for this controlled baseline.
+## Page map
+
+- [1. Problem and data](#1-problem-and-data)
+- [2. Methodology](#2-methodology)
+- [3. Implementation results](#3-implementation-results)
+- [4. Reproducibility and contribution](#4-reproducibility-and-contribution)
+
+---
+
+## 1. Problem and data
+
+### 1.1 Problem formulation
+
+The experiment compares how different representation choices affect
+Fashion-MNIST image classification under one shared split, preprocessing
+protocol, training procedure, and evaluation procedure.
+
+- **Linear and MLP:** flatten the image into 784 pixel values.
+- **CNN:** preserve the two-dimensional image layout and reuse local filters.
+- **GRU and Transformer:** process the 28 image rows as an ordered sequence.
+- **Primary metrics:** test accuracy and macro-F1.
+- **Additional context:** trainable parameter count and measured inference cost.
+
+### 1.2 Dataset and preprocessing
+
+Fashion-MNIST contains 70,000 labeled grayscale images across ten clothing
+classes. Every sample is a single 28 × 28 image. The official training
+partition was split into 50,000 training and 10,000 validation samples using
+stratification and split seed 42. The official 10,000-image test set remained
+separate for final evaluation.
+
+The main runs use ToTensor followed by normalization with mean 0.286276 and
+population standard deviation 0.353185, computed from the training subset.
+The input shape is [1, 28, 28], and the batch size is 128.
 
 ![Fashion-MNIST class distribution](assets/a1/class_distribution.png)
 
 ![Representative Fashion-MNIST samples](assets/a1/representative_samples.png)
 
-## Models
+---
 
-| Model | Architecture | Parameters |
-|---|---|---:|
-| Linear | Flatten 784 pixels, followed by one linear classification layer | 7,850 |
-| MLP | Flatten, hidden layers 256 and 128, ReLU, dropout 0.2, output layer | 235,146 |
+## 2. Methodology
 
-The linear classifier can only learn one affine decision boundary per class.
-The MLP adds nonlinear hidden representations, allowing it to model more
-complex combinations of pixels, but neither model explicitly preserves spatial
-neighbourhoods.
+### 2.1 Shared pipeline
 
-## Experimental setup
+~~~text
+Fashion-MNIST
+    → saved stratified split
+    → tensor conversion and normalization
+    → model forward pass
+    → cross-entropy on logits
+    → Adam update
+    → validation after each epoch
+    → best checkpoint by validation macro-F1
+    → one final test evaluation
+~~~
 
-- Batch size: `128`.
-- Maximum epochs: `100`.
-- Loss: cross-entropy.
-- Optimizer: Adam.
-- Learning rate: `0.001`.
-- Weight decay: `0.0001`.
-- Scheduler: disabled.
-- Early stopping: validation macro-F1, patience `15`, `min_delta=0.0001`.
-- Training seeds: `42`, `123`, and `2026`.
-- Split seed: `42`.
-- Precision: float32.
-- GPU: NVIDIA GeForce RTX 4050 Laptop GPU.
-- Python 3.11.15, PyTorch 2.5.1+cu121, torchvision 0.20.1+cu121.
+All five models use the same data module, training loop, checkpoint rule,
+evaluation code, and training seeds 42, 123, and 2026. The selected checkpoint
+is the one with the best validation macro-F1; the test set is used once for the
+final model evaluation.
 
-The best checkpoint is chosen using validation macro-F1, with validation loss
-as the tie-break. The official test set is evaluated only after checkpoint
-selection. Inference timing measures forward passes using five warm-up batches,
-three repetitions, and CUDA synchronization.
+### 2.2 Model families
 
-## Results
+| Model | Representation | Main architecture | Parameters |
+|---|---|---|---:|
+| Linear | Flattened pixels | 784 → 10 | 7,850 |
+| MLP | Flattened pixels | 784 → 256 → 128 → 10, ReLU, dropout 0.2 | 235,146 |
+| CNN | Spatial image | convolution/pooling blocks, 3136 → 128 → 10, dropout 0.3 | 421,642 |
+| GRU | 28 image rows | one-layer GRU, hidden size 128 | 61,962 |
+| Transformer | 28 image rows | two-layer Transformer encoder | 71,242 |
 
-The table reports sample mean ± sample standard deviation across three seeds.
+### 2.3 Common training and evaluation protocol
 
-| Model | Test accuracy | Test macro-F1 | Training time (s) | Inference (ms/sample) |
+| Setting | Value |
+|---|---|
+| Loss | Cross-entropy on raw logits |
+| Optimizer | Adam |
+| Learning rate | 0.001 |
+| Weight decay | 0.0001 |
+| Maximum epochs | 100 |
+| Early stopping | Validation macro-F1, patience 15, min_delta = 0.0001 |
+| Precision | Float32 |
+| Hardware | NVIDIA GeForce RTX 4050 Laptop GPU |
+| Environment | Python 3.11.15 · PyTorch 2.5.1+cu121 · torchvision 0.20.1+cu121 |
+
+Inference timing uses warm-up batches, repeated full-loader passes, and CUDA
+synchronization. It describes the implementation and hardware environment.
+
+### 2.4 Architecture notes
+
+- **Linear:** a small reference model with one affine decision boundary per class.
+- **MLP:** learns nonlinear feature combinations from flattened pixels.
+- **CNN:** preserves local neighborhoods through convolution and pooling.
+- **GRU:** scans horizontal image rows from top to bottom with a recurrent state.
+- **Transformer:** compares row tokens with self-attention and positional information.
+
+---
+
+## 3. Implementation results
+
+### 3.1 Training behavior
+
+The combined curves show the training and validation behavior across the five
+models. The CNN reaches the strongest validation macro-F1 and maintains the
+best final predictive performance. The Linear model converges quickly to a
+lower plateau, while the sequence models improve through their recurrent or
+attention-based row representations.
+
+![Combined training curves](assets/a1/combined_training_curves.png)
+
+### 3.2 Quantitative results
+
+The table reports the mean and sample standard deviation across three training
+seeds. Accuracy and macro-F1 are the primary comparison metrics.
+
+| Model | Accuracy | Macro-F1 | Parameters | Inference (ms/sample) |
 |---|---:|---:|---:|---:|
-| Linear | 84.58 ± 0.10% | 84.48 ± 0.14% | 250.2 ± 19.7 | 0.00109 ± 0.00001 |
-| MLP | **89.18 ± 0.21%** | **89.15 ± 0.22%** | 307.2 ± 81.7 | 0.00257 ± 0.00009 |
+| Linear | 84.31 ± 0.09% | 84.23 ± 0.06% | 7,850 | 0.00530 ± 0.00350 |
+| MLP | 89.37 ± 0.11% | 89.31 ± 0.12% | 235,146 | 0.00781 ± 0.00833 |
+| CNN | **92.22 ± 0.39%** | **92.20 ± 0.41%** | 421,642 | 0.01265 ± 0.01304 |
+| GRU | 90.29 ± 0.19% | 90.26 ± 0.21% | 61,962 | 0.01880 ± 0.00734 |
+| Transformer | 89.40 ± 0.09% | 89.37 ± 0.13% | 71,242 | 0.05044 ± 0.03408 |
 
-The MLP improves test macro-F1 by approximately 4.67 percentage points. This
-gain supports the value of nonlinear hidden representations. The cost is about
-30 times as many parameters and approximately 2.4 times the inference time per
-sample, although both models remain very small on the benchmark GPU.
+The CNN is the strongest model on both primary metrics. The MLP improves over
+the Linear baseline through nonlinear feature composition, while the CNN gains
+further from spatially shared filters. The GRU is the second strongest model
+with fewer parameters than the CNN. The Transformer remains close to the MLP
+but does not provide a predictive advantage in this row-token configuration.
 
-![Linear training curves for seed 42](assets/a1/linear_training_curves.png)
+### 3.3 Qualitative results
 
-![MLP training curves for seed 42](assets/a1/mlp_training_curves.png)
+The CNN is selected for qualitative analysis because it has the highest mean
+accuracy and macro-F1.
 
-Training time varies more than predictive performance because early stopping
-produces different run lengths: the three MLP runs complete 40, 69, and 56
-epochs. The laptop is also not a dedicated benchmark server. Accuracy and
-macro-F1 remain consistent across seeds.
+![CNN confusion matrix](assets/a1/cnn_confusion_matrix.png)
 
-## Error analysis
+![CNN correct predictions](assets/a1/cnn_correct_predictions.png)
 
-`Shirt` is the hardest class for both models. Aggregated across three seeds, its
-recall is 56.67% for Linear and 70.57% for MLP. The linear model also struggles
-with `Pullover` (73.43% recall) and `Coat` (76.50%). The MLP improves these to
-81.20% and 80.60%, respectively.
+![CNN incorrect predictions](assets/a1/cnn_incorrect_predictions.png)
 
-The most frequent Linear confusion is `Pullover → Coat`. For the MLP, it is
-`Shirt → T-shirt/top`. These classes have similar silhouettes at low resolution,
-and flattening removes an explicit representation of local spatial structure.
+### 3.4 Error analysis
 
-![Linear confusion matrix for seed 42](assets/a1/linear_confusion_matrix.png)
+The main difficulty is distinguishing visually similar upper-body classes.
+For the CNN seed-42 checkpoint, Shirt has the lowest recall at 73.5%, while
+Trouser, Sandal, and Bag reach 98.6%, 98.8%, and 98.8%, respectively. The six
+largest confusion pairs are:
 
-![MLP confusion matrix for seed 42](assets/a1/mlp_confusion_matrix.png)
+| True class → predicted class | Errors | Rate |
+|---|---:|---:|
+| Shirt → T-shirt/top | 108 | 10.8% |
+| T-shirt/top → Shirt | 94 | 9.4% |
+| Coat → Pullover | 75 | 7.5% |
+| Shirt → Pullover | 67 | 6.7% |
+| Shirt → Coat | 56 | 5.6% |
+| Ankle boot → Sneaker | 44 | 4.4% |
 
-![Representative Linear errors](assets/a1/linear_incorrect_predictions.png)
+Among the 819 CNN errors in this seed, 532, approximately 65.0%, involve
+T-shirt/top, Pullover, Coat, or Shirt. This concentration explains why macro-F1
+is reported together with accuracy: a strong aggregate score can still hide a
+weak class.
 
-![Representative MLP errors](assets/a1/mlp_incorrect_predictions.png)
+### 3.5 Representation ablation
 
-## Limitations and next steps
+The ablation changes only the image-to-sequence representation for GRU and
+Transformer. Rows and columns use 28 tokens; patches use 49 4 × 4 tokens.
+The seed-42 best validation accuracies are:
 
-This milestone covers one fixed split, three training seeds, and two baseline
-models without augmentation, additional normalization, a learning-rate
-scheduler, or broad hyperparameter search. Runtime measurements were collected
-on a laptop that may experience background load.
+| Model | Rows | Columns | 4 × 4 patches |
+|---|---:|---:|---:|
+| GRU | **91.19%** | 90.31% | 89.67% |
+| Transformer | **90.63%** | 90.29% | 89.93% |
 
-Later Assignment 1 work will evaluate CNN, RNN, and Transformer models under the
-same 50,000/10,000 protocol. Their results should only be added after all three
-seeds have been trained and evaluated with the same test policy.
+The row representation is the strongest among the tested variants for both
+sequence models. This is evidence for the selected configurations on this
+dataset and seed; repeating the ablation with all three seeds would be needed
+for a more stable estimate.
 
-## Reproduction and artifacts
+### 3.6 Limitations
 
-- [Assignment 1 commands](https://github.com/tapstoptap/deep-learning-261/tree/main/assignment1)
-- [Saved split manifest](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment1/configs/splits/fashion_mnist_train50000_val10000_seed42.json)
-- [Milestone benchmark artifacts](https://github.com/tapstoptap/deep-learning-261/tree/main/assignment1/results/benchmark)
-- [Experiment protocol](assignment1-experiment-protocol.md)
+The conclusions are specific to small, centered, grayscale Fashion-MNIST
+images. The five models also differ in representation, parameter count, and
+architecture-specific regularization, so the ranking does not isolate one
+architectural component. Inference measurements describe this implementation
+and hardware environment.
 
-Checkpoint binaries and raw predictions are excluded from Git. Per-seed metrics,
-run identifiers, selected epochs, split hashes, curves, and confusion matrices
-are retained in `assignment1/results/benchmark/`.
+---
 
-## AI usage disclosure
+## 4. Reproducibility and contribution
 
-Generative AI assisted with configuration planning, implementation, test
-creation, result checking, and documentation drafting. All experiments were run
-locally and verified from saved outputs. See the repository
-[AI usage log](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md).
+The source code, model configurations, split manifest, and saved benchmark
+artifacts are available in the repository. The report source is kept locally;
+the submitted repository includes the exported report PDF and presentation
+materials.
+
+Nguyen Minh Quang (2453052) is responsible for the complete Assignment 1:
+EDA, preprocessing, DataLoader preparation, implementation of all five models,
+experiment execution, result aggregation, comparison and error analysis,
+report, slides, and video presentation.
+
+AI assistance was used for planning, implementation support, result checking,
+analysis, and report organization. The AI usage table and verification details
+are recorded in [AI_USAGE.md](../AI_USAGE.md).

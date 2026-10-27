@@ -3,6 +3,8 @@ from __future__ import annotations
 import torch
 from torch import nn
 
+from .representations import images_to_sequence
+
 
 class RecurrentImageClassifier(nn.Module):
     def __init__(
@@ -15,9 +17,11 @@ class RecurrentImageClassifier(nn.Module):
         bidirectional: bool,
         dropout: float,
         num_classes: int,
+        patch_size: int = 4,
     ) -> None:
         super().__init__()
         self.representation = representation
+        self.patch_size = patch_size
 
         recurrent_dropout = dropout if num_layers > 1 else 0.0
         recurrent_type = recurrent_type.lower()
@@ -40,12 +44,7 @@ class RecurrentImageClassifier(nn.Module):
         self.classifier = nn.Linear(output_dim, num_classes)
 
     def images_to_sequence(self, images: torch.Tensor) -> torch.Tensor:
-        image_rows = images.squeeze(1)
-        if self.representation == "image_rows":
-            return image_rows
-        if self.representation == "image_columns":
-            return image_rows.transpose(1, 2)
-        raise ValueError(f"Unsupported image representation: {self.representation}")
+        return images_to_sequence(images, self.representation, self.patch_size)
 
     def forward(self, images: torch.Tensor) -> torch.Tensor:
         sequence = self.images_to_sequence(images)

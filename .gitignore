@@ -32,6 +32,13 @@ assignment1/results/rnn/
 assignment1/results/transformer/
 assignment1/results/model_comparison.csv
 assignment1/results/model_comparison.json
+assignment1/results_norm_full/
+assignment1/results_norm_test/
+
+# The report source is kept locally; only the exported report PDF and slides are tracked
+assignment1/report/DL_ASS1/
+assignment1/report/slide/
+assignment1/report/report.zip
 
 # Secrets
 .env

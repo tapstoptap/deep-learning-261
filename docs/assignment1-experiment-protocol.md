@@ -5,16 +5,15 @@ title: Assignment 1 Experiment Protocol
 # Assignment 1 Experiment Protocol
 
 This document is the human-readable contract for
-`assignment1/configs/protocol.yaml`. The 23 September milestone covers the
-Linear and MLP baselines; later Assignment 1 models must follow the same shared
-rules before their results can be added to the comparison.
+`assignment1/configs/protocol.yaml`. The final protocol covers all five
+Assignment 1 model families under the same shared rules.
 
 ## Status
 
 - Protocol ID: `a1`.
-- Status: executed draft.
+- Status: executed draft with normalized preprocessing.
 - Approval: pending group review.
-- Completed main runs: six (two models × three training seeds).
+- Completed main runs: fifteen (five models × three training seeds).
 
 ## Dataset and split
 
@@ -38,7 +37,8 @@ deviation are reported across the three runs.
 
 Inputs have shape `[batch, 1, 28, 28]` and are scaled to `[0, 1]`. The saved
 50,000-image training subset has mean `0.2862758040` and standard deviation
-`0.3531853259`. Additional normalization and data augmentation are disabled.
+`0.3531853259`; these statistics are applied to train, validation, and test
+images. Data augmentation remains disabled.
 
 ## Training policy
 
@@ -71,8 +71,8 @@ representative predictions are also retained. Repeated evaluation of the same
 ## Checkpoint and timing policy
 
 Best and last checkpoints are written atomically through a temporary file and
-replacement. Checkpoint binaries stay local; portable metrics and figures are
-stored in `assignment1/results/benchmark/`.
+replacement. Checkpoint binaries stay local; portable normalized metrics and
+figures are stored in `assignment1/results/benchmark/`.
 
 Inference timing uses float32 forward passes, five warm-up batches, three
 measurement repetitions, and CUDA synchronization around each timed pass. All
@@ -96,8 +96,8 @@ assignment1/configs/splits/
 
 - [x] Save and validate the 50,000/10,000 stratified split.
 - [x] Measure statistics only on the training subset.
-- [x] Train Linear and MLP with all three training seeds.
-- [x] Evaluate six selected checkpoints on the official test set.
+- [x] Train all five model families with all three training seeds.
+- [x] Evaluate fifteen selected checkpoints on the official test set.
 - [x] Run the 13-test unit suite.
 - [x] Record the benchmark hardware and package versions.
 - [ ] Obtain group review and populate `approved_by` before changing protocol

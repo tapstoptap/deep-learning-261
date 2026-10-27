@@ -1,0 +1,19 @@
+{
+  "run_name": "transformer_norm_seed42_20261025_193345",
+  "model": "transformer",
+  "seed": 42,
+  "device": "cuda",
+  "device_description": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "trainable_parameters": 71242,
+  "epochs_completed": 31,
+  "best_epoch": 16,
+  "best_validation_metrics": {
+    "accuracy": 0.9063,
+    "macro_f1": 0.9058194058639867,
+    "loss": 0.26432246441841123
+  },
+  "training_time_seconds": 753.6082349999924,
+  "best_checkpoint": "D:\\bk_study_stuff\\261\\DL\\deep-learning-261\\assignment1\\checkpoints\\transformer\\transformer_norm_seed42_20261025_193345\\best.pt",
+  "last_checkpoint": "D:\\bk_study_stuff\\261\\DL\\deep-learning-261\\assignment1\\checkpoints\\transformer\\transformer_norm_seed42_20261025_193345\\last.pt",
+  "git_commit": "6e68bc838d26feb2491efc7d17c1cf7822b743d5"
+}

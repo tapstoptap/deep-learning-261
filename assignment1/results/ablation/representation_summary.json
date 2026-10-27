@@ -1,0 +1,38 @@
+[
+  {
+    "model": "rnn",
+    "representation": "image_rows",
+    "variant": "rnn/image_rows",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "validation_accuracy_mean": 0.9129333333333334,
+    "validation_accuracy_std": 0.001106044001535799,
+    "validation_macro_f1_mean": 0.912735052220623,
+    "validation_macro_f1_std": 0.0009548284428371392,
+    "validation_loss_mean": 0.26963034857908885,
+    "validation_loss_std": 0.013913075931187393,
+    "trainable_parameters": 61962,
+    "best_epoch_mean": 28.333333333333332,
+    "best_epoch_std": 5.773502691896257,
+    "training_time_seconds_mean": 1024.7046076333306,
+    "training_time_seconds_std": 715.8803056403123
+  },
+  {
+    "model": "transformer",
+    "representation": "image_rows",
+    "variant": "transformer/image_rows",
+    "runs": 3,
+    "seeds": "42,123,2026",
+    "validation_accuracy_mean": 0.9088666666666666,
+    "validation_accuracy_std": 0.002289832599412725,
+    "validation_macro_f1_mean": 0.9086870957270278,
+    "validation_macro_f1_std": 0.002624253534060642,
+    "validation_loss_mean": 0.27623097332318625,
+    "validation_loss_std": 0.01134822406861033,
+    "trainable_parameters": 71242,
+    "best_epoch_mean": 32.666666666666664,
+    "best_epoch_std": 15.631165450257807,
+    "training_time_seconds_mean": 1624.248207933347,
+    "training_time_seconds_std": 782.2819097728244
+  }
+]
