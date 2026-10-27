@@ -1,0 +1,60 @@
+{
+  "split": "test",
+  "samples": 25250,
+  "loss": 1.9649,
+  "accuracy": 0.5196039603960396,
+  "macro_f1": 0.5121142578125,
+  "checkpoint": "/kaggle/working/deep-learning-261/assignment2/checkpoints/baseline/simple_cnn_best.pt",
+  "top_confusions": [
+    {
+      "true_class": "steak",
+      "pred_class": "filet_mignon",
+      "count": 42
+    },
+    {
+      "true_class": "cheesecake",
+      "pred_class": "panna_cotta",
+      "count": 40
+    },
+    {
+      "true_class": "samosa",
+      "pred_class": "spring_rolls",
+      "count": 37
+    },
+    {
+      "true_class": "chocolate_mousse",
+      "pred_class": "chocolate_cake",
+      "count": 33
+    },
+    {
+      "true_class": "panna_cotta",
+      "pred_class": "cheesecake",
+      "count": 28
+    },
+    {
+      "true_class": "ramen",
+      "pred_class": "pho",
+      "count": 28
+    },
+    {
+      "true_class": "breakfast_burrito",
+      "pred_class": "chicken_quesadilla",
+      "count": 26
+    },
+    {
+      "true_class": "filet_mignon",
+      "pred_class": "foie_gras",
+      "count": 26
+    },
+    {
+      "true_class": "hummus",
+      "pred_class": "chicken_quesadilla",
+      "count": 26
+    },
+    {
+      "true_class": "pork_chop",
+      "pred_class": "filet_mignon",
+      "count": 24
+    }
+  ]
+}

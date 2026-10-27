@@ -1,0 +1,32 @@
+# Baseline configuration
+# Food-101 - Simple CNN trained from scratch
+
+seed: 42
+
+data:
+  root: data/food-101
+  image_size: 224
+  num_classes: 101
+
+  train_split: train
+  val_ratio: 0.1
+  test_split: test
+
+model:
+  name: simple_cnn
+  num_classes: 101
+
+training:
+  batch_size: 64
+  epochs: 20
+  learning_rate: 0.001
+  weight_decay: 0.0001
+
+evaluation:
+  metrics:
+    - accuracy
+    - macro_f1
+
+output:
+  checkpoint_dir: checkpoints/baseline
+  result_dir: results/baseline
