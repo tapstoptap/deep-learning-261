@@ -11,7 +11,11 @@ title: Assignment 1 — Model Comparison
 > A controlled comparison of five classifier families on Fashion-MNIST,
 > from a linear baseline to spatial and row-token architectures.
 
-[Download the report](../assignment1/report/DL_A1_report.pdf) · [Watch the presentation](https://youtu.be/nHcVq0U0Zc4)
+[Download the report](../assignment1/report/DL_A1_report.pdf)
+
+<div style="max-width: 900px; margin: 1rem 0 2rem;">
+<iframe width="100%" height="500" src="https://www.youtube.com/embed/nHcVq0U0Zc4" title="Assignment 1 presentation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+</div>
 
 ## At a glance
 
@@ -28,7 +32,9 @@ title: Assignment 1 — Model Comparison
 - [1. Problem and data](#1-problem-and-data)
 - [2. Methodology](#2-methodology)
 - [3. Implementation results](#3-implementation-results)
-- [4. Reproducibility and contribution](#4-reproducibility-and-contribution)
+- [4. Reproducibility](#4-reproducibility)
+- [5. Contribution](#5-contribution)
+- [6. AI usage](#6-ai-usage)
 
 ---
 
@@ -211,18 +217,47 @@ and hardware environment.
 
 ---
 
-## 4. Reproducibility and contribution
+## 4. Reproducibility
 
 The source code, model configurations, split manifest, and saved benchmark
 artifacts are available in the repository. The report source is kept locally;
 the submitted repository includes the exported report PDF and presentation
 materials.
 
-Nguyen Minh Quang (2453052) is responsible for the complete Assignment 1:
-EDA, preprocessing, DataLoader preparation, implementation of all five models,
-experiment execution, result aggregation, comparison and error analysis,
-report, slides, and video presentation.
+The reproducible Assignment 1 files are organized as follows:
+
+~~~text
+assignment1/
+├── configs/                 # shared protocol, model configs, saved split
+├── src/                     # datasets, models, training, evaluation
+├── tests/                   # unit tests
+├── results/
+│   ├── benchmark/           # portable per-seed benchmark artifacts
+│   └── ablation/            # representation ablation summaries
+├── README.md                # setup and reproduction commands
+└── report/
+    ├── DL_A1_report.pdf
+    └── DL_A1_slide.pdf
+~~~
+
+The main benchmark uses the saved stratified split, three training seeds, the
+shared YAML protocol, and validation macro-F1 for checkpoint selection. The
+repository also contains the model-specific source files and the row, column,
+and 4 × 4 patch ablation configurations.
+
+## 5. Contribution
+
+Nguyen Minh Quang (2453052) is the sole author and contributor to Assignment 1.
+The work covers EDA, preprocessing, DataLoader preparation, implementation of
+all five models, experiment execution, result aggregation, comparison, error
+analysis, report writing, slide preparation, and video presentation.
+
+Nguyen Minh Phuc (2453005) and Nguyen Thanh The (2453191) are members of the
+course project, but they did not contribute to Assignment 1.
+
+## 6. AI usage
 
 AI assistance was used for planning, implementation support, result checking,
 analysis, and report organization. The AI usage table and verification details
-are recorded in [AI_USAGE.md](../AI_USAGE.md).
+are recorded in [AI_USAGE.md](../AI_USAGE.md). The final code, experiments,
+metrics, interpretations, report, and presentation were checked by the student.
