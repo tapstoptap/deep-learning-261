@@ -1,5 +1,7 @@
 # Food-101 demo
 
+**Live demo:** <https://deep-learning-261-ahricdx9pw4yfwaqmrmx7e.streamlit.app/>
+
 Web demo for Assignment 2: upload a food photo and compare the two ResNet-50
 checkpoints side by side — E3 (full fine-tune, test Macro-F1 86.10% /
 accuracy 86.17%) and E2 (frozen backbone, test Macro-F1 66.36% / accuracy

@@ -24,7 +24,7 @@ The presentation video is recorded from the slides and published on YouTube (unl
 Only the exported PDFs are tracked, as in Assignment 1. The LaTeX sources are kept in the local working copy and are not part of the repository, so there is nothing to rebuild from a fresh clone.
 
 ## Interactive demo
-[`demo/`](demo/README.md) is a Streamlit web app that loads the E3 (full fine-tune) and E2 (frozen backbone) checkpoints side by side: upload a food photo or pick a built-in Food-101 example, and each model shows its top-6 class probabilities on CPU. It reuses the exact evaluation transform and the same `.pt` checkpoints, so its outputs match the recorded test behaviour. Run locally with `streamlit run demo/streamlit_app.py`; deployment notes (Streamlit Cloud + a free Hugging Face checkpoint host) are in [`demo/README.md`](demo/README.md).
+[`demo/`](demo/README.md) is a Streamlit web app that loads the E3 (full fine-tune) and E2 (frozen backbone) checkpoints side by side: upload a food photo or pick a built-in Food-101 example, and each model shows its top-6 class probabilities on CPU. It reuses the exact evaluation transform and the same `.pt` checkpoints, so its outputs match the recorded test behaviour. Live at <https://deep-learning-261-ahricdx9pw4yfwaqmrmx7e.streamlit.app/>. Run locally with `streamlit run demo/streamlit_app.py`; deployment notes (Streamlit Cloud + a free Hugging Face checkpoint host) are in [`demo/README.md`](demo/README.md).
 
 ## Setup
 ```bash
