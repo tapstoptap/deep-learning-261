@@ -12,21 +12,19 @@ See [`proposal/dataset_proposal.md`](proposal/dataset_proposal.md).
 - **Approval record:** maintained with the group's course-workflow records.
 
 ## Deliverables
-- [Report PDF](report/CHOCO_A2_Report.pdf) ([LaTeX source](report/CHOCO_A2_Report.tex))
-- [Slides PDF](report/CHOCO_A2_Slides.pdf) ([LaTeX source](report/CHOCO_A2_Slides.tex))
+- [Report PDF](report/CHOCO_A2_Report.pdf)
+- [Slides PDF](report/CHOCO_A2_Slides.pdf)
 - [Checkpoint and reconstruction instructions](CHECKPOINTS.md)
-- [Presentation script](report/video_script.md)
+- [Interactive web demo (Streamlit)](demo/README.md)
 - [Assignment page](../docs/assignment2.md)
 
-The presentation video is recorded from the slides and script and published on YouTube (unlisted): <https://youtu.be/xfPd0ZnpQYE>.
+The presentation video is recorded from the slides and published on YouTube (unlisted): <https://youtu.be/xfPd0ZnpQYE>.
 
-### Rebuilding the PDFs
-```bash
-cd report
-mkdir -p build build_slides
-pdflatex -output-directory=build CHOCO_A2_Report.tex   # run twice (TOC)
-pdflatex -output-directory=build_slides CHOCO_A2_Slides.tex   # run twice (title overlay)
-```
+### Report sources
+Only the exported PDFs are tracked, as in Assignment 1. The LaTeX sources are kept in the local working copy and are not part of the repository, so there is nothing to rebuild from a fresh clone.
+
+## Interactive demo
+[`demo/`](demo/README.md) is a Streamlit web app that loads the E3 (full fine-tune) and E2 (frozen backbone) checkpoints side by side: upload a food photo or pick a built-in Food-101 example, and each model shows its top-6 class probabilities on CPU. It reuses the exact evaluation transform and the same `.pt` checkpoints, so its outputs match the recorded test behaviour. Live at <https://deep-learning-261-ahricdx9pw4yfwaqmrmx7e.streamlit.app/>. Run locally with `streamlit run demo/streamlit_app.py`; deployment notes (Streamlit Cloud + a free Hugging Face checkpoint host) are in [`demo/README.md`](demo/README.md).
 
 ## Setup
 ```bash
@@ -73,6 +71,7 @@ python src/train.py --config configs/pretrained.yaml
 ```bash
 python src/train.py --config configs/baseline.yaml --smoke-test
 ```
+Smoke runs write to `checkpoints/*_smoke/` and `results/*_smoke/` (unless `--checkpoint-dir` / `--result-dir` are passed), so they cannot overwrite the official checkpoints or artifacts.
 
 ## Evaluation
 Run evaluation on the test set:
@@ -99,7 +98,7 @@ python src/train.py --config configs/ablation_frozen_e3proto.yaml
 python src/evaluate.py --config configs/ablation_frozen_e3proto.yaml   --checkpoint checkpoints/ablation_frozen_e3proto/resnet50_best.pt --split test
 ```
 
-Under the matched protocol, unfreezing is worth +24.46 accuracy points (61.71% → 86.17%); the protocol switch alone costs the frozen model 4.99 points.
+Under the matched protocol, E3 exceeds A0 by +24.46 accuracy points (86.17% vs. 61.71%) in the two recorded runs; the protocol switch coincides with a 4.99-point drop for the frozen model.
 
 ## Environment
 - Training: Kaggle Tesla T4 (E1/E2), Tesla P100 (E3), and Colab for A0 (GPU model not logged), PyTorch 2.x + torchvision.

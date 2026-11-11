@@ -63,14 +63,16 @@ def create_optimizer(model: nn.Module, training_cfg: dict[str, Any]) -> torch.op
 def create_scheduler(
     optimizer: torch.optim.Optimizer, training_cfg: dict[str, Any], total_epochs: int
 ):
-    sched_name = training_cfg.get("scheduler", "cosine").lower()
-    if sched_name == "cosine":
+    sched_name = training_cfg.get("scheduler", "none").lower()
+    if sched_name == "none":
+        return None
+    elif sched_name == "cosine":
         return CosineAnnealingLR(optimizer, T_max=total_epochs, eta_min=1e-6)
     elif sched_name == "step":
         step_size = training_cfg.get("step_size", max(1, total_epochs // 3))
         gamma = training_cfg.get("gamma", 0.1)
         return StepLR(optimizer, step_size=step_size, gamma=gamma)
-    return None
+    raise ValueError(f"Unsupported scheduler: {sched_name}")
 
 
 def run_epoch(
@@ -191,6 +193,9 @@ def train(args: argparse.Namespace) -> None:
     config = load_yaml_config(config_path)
 
     seed = args.seed if args.seed is not None else config.get("seed", 42)
+    # Persist the effective seed (including any CLI override) so saved
+    # checkpoints record the split that was actually used.
+    config["seed"] = seed
     set_seed(seed)
 
     # Device selection
@@ -247,6 +252,14 @@ def train(args: argparse.Namespace) -> None:
     out_cfg = config.get("output", {})
     ckpt_dir = Path(args.checkpoint_dir or out_cfg.get("checkpoint_dir", "checkpoints"))
     res_dir = Path(args.result_dir or out_cfg.get("result_dir", "results"))
+    if args.smoke_test:
+        # Keep smoke runs away from the official run directories so they can
+        # never overwrite a real checkpoint or its history/summary artifacts.
+        if args.checkpoint_dir is None:
+            ckpt_dir = ckpt_dir.parent / f"{ckpt_dir.name}_smoke"
+        if args.result_dir is None:
+            res_dir = res_dir.parent / f"{res_dir.name}_smoke"
+        print(f"Smoke test: writing to {ckpt_dir} and {res_dir}")
     if not ckpt_dir.is_absolute():
         ckpt_dir = assignment_root / ckpt_dir
     if not res_dir.is_absolute():
@@ -262,6 +275,9 @@ def train(args: argparse.Namespace) -> None:
     epochs = args.epochs if args.epochs else training_cfg.get("epochs", 20)
     if args.smoke_test:
         epochs = 1
+    # Persist the effective epoch count so saved checkpoints reproduce
+    # the exact run that produced them.
+    training_cfg["epochs"] = epochs
 
     criterion = nn.CrossEntropyLoss()
     optimizer = create_optimizer(model, training_cfg)

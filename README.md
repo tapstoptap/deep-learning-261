@@ -62,8 +62,8 @@ test set.
 | A0 | ResNet-50 | Frozen, E3 protocol (control) | 61.71% | 60.88% |
 | E3 | ResNet-50 | Full fine-tuning | **86.17%** | **86.10%** |
 
-Under the matched protocol (A0 vs E3), unfreezing is worth 24.46 points; the
-protocol switch alone costs the frozen model 4.99 points. Reproduction commands
+Under the matched protocol (A0 vs E3), the observed gap is 24.46 points; the
+protocol switch coincides with a 4.99-point drop for the frozen model. Reproduction commands
 and expected metrics are in [`assignment2/README.md`](assignment2/README.md)
 and [`assignment2/CHECKPOINTS.md`](assignment2/CHECKPOINTS.md); the
 [presentation video](https://youtu.be/xfPd0ZnpQYE) is on YouTube (unlisted).

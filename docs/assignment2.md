@@ -52,14 +52,15 @@ For analysis only, the 101 food classes are grouped into eight culinary domains.
 2. **Meat & Poultry (13 classes):** e.g., *baby back ribs, beef carpaccio, filet mignon, peking duck, steak*.
 3. **Asian & Regional Specialties (15 classes):** e.g., *bibimbap, dumplings, gyoza, pad thai, pho, ramen, sushi*.
 4. **Fast Food & Sandwiches (17 classes):** e.g., *club sandwich, hamburger, hot dog, pizza, tacos, poutine*.
-5. **Seafood (12 classes):** e.g., *clam chowder, grilled salmon, mussels, oysters, sashimi, tuna tartare*.
+5. **Seafood (12 classes):** e.g., *clam chowder, grilled salmon, mussels, oysters, tuna tartare*.
 6. **Pasta, Noodles & Rice (8 classes):** e.g., *lasagna, macaroni and cheese, risotto, spaghetti carbonara, paella*.
-7. **Salads, Vegetables & Starters (10 classes):** e.g., *caesar salad, edamame, greek salad, guacamole, hummus, deviled eggs*.
+7. **Salads, Vegetables & Starters (10 classes):** e.g., *caesar salad, greek salad, guacamole, hummus, deviled eggs*.
 8. **Breakfast & Egg Dishes (4 classes):** e.g., *eggs benedict, huevos rancheros, omelette, french toast*.
 
 ### 2.3 Class Difficulty Analysis
 ![Per-Class Difficulty](assets/a2/per_class_difficulty.png)
 
+This section is a post-hoc analysis of E2 test predictions, not a survey of the training images, and it was not used for tuning.
 - **Most Distinctive Classes (>85% recall):** Items with distinctive geometric forms, singular colors, or packaging (e.g., *edamame* pods, layered *macarons*, *oysters* in shells, *miso soup* bowls).
 - **Most Challenging Classes (<55% recall in feature extractor):** Foods characterized by continuous textures, sauces, or ambiguous culinary cuts (e.g., *foie gras, steak, pork chop, apple pie, bread pudding*).
 
@@ -76,14 +77,14 @@ Raw Image (RGB)
   → PyTorch DataLoader (batch size 32 / 64)
   → Deep Architecture (E1 / E2 / E3)
   → Cross-Entropy Loss
-  → Optimizer (Adam / AdamW) + Cosine Annealing Learning Rate Scheduler
+  → Optimizer (Adam / AdamW; cosine annealing for E2/E3/A0, constant LR for E1)
   → Prediction (Argmax) & Metric Computation (Accuracy, Macro-F1, Confusion Matrix)
 ```
 
 An example training batch is a `float32` tensor of shape `[B, 3, 224, 224]`, where `B=64` for E1/E2 and `B=32` for E3. Training uses only random horizontal flipping; validation and test use resize and normalization with no augmentation.
 
 ### 3.2 Model Architectures & Comparison Design
-We compare three adaptation regimes plus a matched frozen control (A0) under a shared data split and evaluation protocol. They are a **protocol comparison**, not three one-factor ablations: E1 vs E2 changes architecture and initialization, while E2 vs E3 changes unfreezing *and* the optimization protocol (Adam vs AdamW, learning rate, batch size, and GPU). Fixed factors are the train/validation/test split, input size, seed 42, weight decay, cosine schedule, checkpoint rule, and metric set. The combined E2→E3 gap is therefore descriptive, not a clean causal estimate of unfreezing alone. A fourth run, **A0**, resolves this: it keeps the E2 frozen backbone but trains it with the E3 protocol (AdamW, $10^{-4}$, batch 32, 15 epochs), so A0 and E3 differ only in `freeze_backbone`.
+We compare three adaptation regimes plus a matched frozen control (A0) under a shared data split and evaluation protocol. They are a **protocol comparison**, not three one-factor ablations: E1 vs E2 changes architecture and initialization, while E2 vs E3 changes unfreezing *and* the optimization protocol (Adam vs AdamW, learning rate, batch size, and GPU). Fixed factors are the train/validation/test split, input size, seed 42, weight decay, checkpoint rule, and metric set (E2/E3/A0 also share a configured cosine schedule; E1 trains at a constant rate). The combined E2→E3 gap is therefore descriptive, not a clean causal estimate of unfreezing alone. A fourth run, **A0**, resolves this: it keeps the E2 frozen backbone but trains it with the E3 protocol (AdamW, $10^{-4}$, batch 32, 15 epochs), so A0 and E3 share the optimisation protocol and differ in `freeze_backbone` (A0 also ran on an unlogged Colab GPU, so hardware is not matched).
 
 1. **E1 — Baseline Simple CNN (Trained from scratch):**
    - 4 Convolutional blocks: `Conv2d(3, 32)` $\rightarrow$ `Conv2d(32, 64)` $\rightarrow$ `Conv2d(64, 128)` $\rightarrow$ `Conv2d(128, 256)`. Each block features `BatchNorm2d`, `ReLU`, and `MaxPool2d(2)`.
@@ -93,18 +94,18 @@ We compare three adaptation regimes plus a matched frozen control (A0) under a s
 
 2. **E2 — ResNet-50 Feature Extractor (Frozen Backbone):**
    - Backbone: ResNet-50 pretrained on ImageNet-1k (50 layers, deep residual bottlenecks).
-   - Backbone parameters: 23,508,032 (strictly **frozen**, `requires_grad = False`).
+   - Backbone parameters: 23,508,032 (strictly **frozen**, `requires_grad = False`). Only parameters are frozen: the model still runs in training mode, so the backbone BatchNorm running statistics keep updating from Food-101 batches while their affine weights stay fixed.
    - Classification head: `Dropout(0.2)` $\rightarrow$ `Linear(2048, 101)`.
    - Trainable parameters: **206,949** (only 0.87% of total network parameters).
 
 3. **E3 — ResNet-50 Full Fine-Tuning (End-to-End Adaptation):**
    - Backbone: ResNet-50 initialized from ImageNet-1k weights.
-   - All 23,714,981 parameters are **unfrozen** and fine-tuned end-to-end at a calibrated learning rate ($\eta = 10^{-4}$) with Cosine Annealing decay.
+   - All 23,714,981 parameters are **unfrozen** and fine-tuned end-to-end at a calibrated learning rate ($\eta = 10^{-4}$) with AdamW; the config specifies cosine annealing, confirmed by the exported Kaggle run, while the saved history logs a constant rate (a curation artifact; see Limitations).
 
 4. **A0 — Matched-control Frozen ResNet-50:**
    - Same frozen backbone and head as E2 (206,949 trainable parameters).
    - Trained with the E3 protocol: AdamW, $10^{-4}$, batch 32, cosine schedule, 15 epochs, seed 42.
-   - The only intended difference from E3 is `freeze_backbone`; the difference from E2 is the optimizer, learning rate, batch size, and GPU.
+   - The only intended experimental difference from E3 is `freeze_backbone`; hardware also differs (A0 ran on an unlogged Colab GPU, E3 on a P100). The difference from E2 is the optimizer, learning rate, batch size, and GPU.
 
 ---
 
@@ -119,7 +120,7 @@ We compare three adaptation regimes plus a matched frozen control (A0) under a s
 | **Optimizer** | AdamW ($\beta_1=0.9, \beta_2=0.999$) | Adam | AdamW | AdamW |
 | **Initial Learning Rate** | $1 \times 10^{-3}$ | $1 \times 10^{-3}$ | $1 \times 10^{-4}$ | $1 \times 10^{-4}$ |
 | **Weight Decay** | $1 \times 10^{-4}$ | $1 \times 10^{-4}$ | $1 \times 10^{-4}$ | $1 \times 10^{-4}$ |
-| **LR Scheduler** | CosineAnnealingLR | CosineAnnealingLR | CosineAnnealingLR | CosineAnnealingLR |
+| **LR Scheduler** | None (constant) | CosineAnnealingLR | CosineAnnealingLR | CosineAnnealingLR |
 | **Seed** | 42 | 42 | 42 | 42 |
 | **Checkpoint rule** | Best validation macro-F1 | Best validation macro-F1 | Best validation macro-F1 | Best validation macro-F1 |
 | **Framework** | PyTorch 2.x + torchvision (Kaggle image) | PyTorch 2.x + torchvision (Kaggle image) | PyTorch 2.x + torchvision (Colab image) | PyTorch 2.x + torchvision (Kaggle image) |
@@ -132,7 +133,7 @@ The instrumented Kaggle session that produced the inference benchmark and the qu
 | E1 | A scratch CNN provides a lower-bound reference. | Architecture and random initialization. | Data split, input size, seed, weight decay, metric set. | Report accuracy and macro-F1; no superiority claim. |
 | E2 | Frozen ImageNet features improve over the scratch reference. | Architecture and pretrained initialization. | Data split, input size, seed, weight decay, metric set. | Higher test accuracy and macro-F1 than E1; report parameter count. |
 | E3 | Full fine-tuning improves over the frozen backbone. | Unfreezing, optimizer, learning rate, batch size, GPU. | Data split, input size, seed, weight decay, metric set, epoch count (15). | Higher test accuracy and macro-F1 than E2, with the protocol confound stated. |
-| A0 | The E2→E3 gap is not an artefact of the protocol switch. | Vs. E2: optimizer, learning rate, batch size, GPU. | Data split, input size, seed, weight decay, metric set, epoch count (15), frozen backbone. | Frozen baseline under the E3 protocol; A0→E3 isolates unfreezing. |
+| A0 | The E2→E3 gap is not an artefact of the protocol switch. | Vs. E2: optimizer, learning rate, batch size, GPU. | Data split, input size, seed, weight decay, metric set, epoch count (15), frozen backbone. | Frozen baseline under the E3 protocol; in the two recorded runs E3 exceeds A0 by 24.46 accuracy points (A0 ran on an unlogged Colab GPU, so the gap is descriptive). |
 
 ---
 
@@ -148,7 +149,7 @@ All models were evaluated on the completely unseen, official 25,250-image test s
 | **A0** | ResNet-50 | Frozen, E3 protocol | 206,949 | 108.17 min | 58.7% | 57.5% | 56.61% | 1.6553 | **61.71%** | **60.88%** |
 | **E3** | ResNet-50 | Pretrained (Fine-tune) | 23,714,981 | 269.35 min | 99.88% | **81.50%** | **81.45%** | **0.6494** | **86.17%** | **86.10%** |
 
-Training time is wall-clock time on the listed GPU. E1/E2 ran on a Tesla T4, E3 on a Tesla P100, and A0 on an unlogged Colab GPU, so the durations are not hardware-matched. A0's final-epoch train/validation accuracy are read from its training curves.
+Training time is wall-clock time on the listed GPU. E1/E2 ran on a Tesla T4, E3 on a Tesla P100, and A0 on an unlogged Colab GPU, so the durations are not hardware-matched. Train Acc is the final-epoch training accuracy; Val Acc / Val Macro-F1 are at the selected checkpoint (best validation macro-F1). For E2 these are different epochs: final-epoch train accuracy is 70.21%, while the selected epoch 11 gives 61.98% validation accuracy and 61.55% macro-F1. For E3 the validation accuracy peak is 81.50% at epoch 14, while the selected epoch 15 gives 81.49% / 81.45%. A0 train/validation values are read from its training curves.
 
 ### 5.2 Training and Validation Trajectories
 
@@ -170,8 +171,8 @@ Training time is wall-clock time on the listed GPU. E1/E2 ran on a Tesla T4, E3 
 
 | Dimension | E1: Baseline CNN | E2: ResNet-50 Frozen | A0: Frozen, E3 protocol | E3: ResNet-50 Fine-tuned | $\Delta$ (E2 vs E1) | $\Delta$ (E3 vs E2) | $\Delta$ (E3 vs A0) | $\Delta$ (E3 vs E1) |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Test Accuracy** | 51.96% | 66.70% | 61.71% | **86.17%** | **+14.74%** | **+19.47%** | **+24.46%** | **+34.21%** |
-| **Test Macro-F1** | 51.21% | 66.36% | 60.88% | **86.10%** | **+15.15%** | **+19.74%** | **+25.22%** | **+34.89%** |
+| **Test Accuracy** | 51.96% | 66.70% | 61.71% | **86.17%** | **+14.74 pp** | **+19.47 pp** | **+24.46 pp** | **+34.21 pp** |
+| **Test Macro-F1** | 51.21% | 66.36% | 60.88% | **86.10%** | **+15.15 pp** | **+19.74 pp** | **+25.22 pp** | **+34.89 pp** |
 | **Test Loss** | 1.9649 | 1.2933 | 1.6553 | **0.6494** | -0.6716 | -0.6439 | -1.0058 | -1.3155 |
 | **Trainable Params** | 414,853 | **206,949** | **206,949** | 23,714,981 | -50.1% | +114x | +114x | +57x |
 | **Training Duration** | 162.52 min | 149.82 min | 108.17 min | 269.35 min | -7.8% | +79.8% | n/m* | +65.7% |
@@ -180,14 +181,14 @@ Training time is wall-clock time on the listed GPU. E1/E2 ran on a Tesla T4, E3 
 
 ### Key Scientific Insights:
 1. **Transfer with a frozen backbone (E2 vs E1):**
-   - E2 surpasses E1 by **+14.74% accuracy** while updating **fewer than half the parameters** (207K vs 415K).
+   - E2 surpasses E1 by **+14.74 pp accuracy** while updating **fewer than half the parameters** (207K vs 415K).
    - This is consistent with ImageNet features transferring to food classification, but E1 and E2 also differ in architecture, so the gap is not an isolated estimate of pretraining.
 2. **End-to-end fine-tuning (E3 vs E2):**
-   - The fine-tuning protocol improves accuracy by **+19.47%** (from 66.70% to 86.17%).
+   - The fine-tuning protocol improves accuracy by **+19.47 pp** (from 66.70% to 86.17%).
    - Because unfreezing is bundled with a different optimizer, learning rate, batch size, and GPU, this gap alone is descriptive.
 3. **Matched-protocol control (E3 vs A0):**
-   - Under the E3 protocol, unfreezing is worth **+24.46 points** of accuracy (61.71% → 86.17%) and **+25.22 points** of macro-F1 (60.88% → 86.10%).
-   - The protocol switch alone *costs* the frozen model 4.99 points (66.70% vs 61.71%), so the naive +19.47 gap understates the effect of unfreezing.
+   - In the two recorded runs under the E3 protocol, E3 exceeds the frozen A0 by **+24.46 pp** of accuracy (86.17% vs. 61.71%) and **+25.22 pp** of macro-F1 (86.10% vs. 60.88%).
+   - In these runs the protocol switch coincides with a 4.99-point drop for the frozen model (66.70% vs 61.71%), so the naive +19.47 gap understates the observed E3−A0 difference.
 4. **Accuracy vs. compute trade-off:**
    - E2 delivers 66.7% on 101 classes in about 2.5 hours on a T4.
    - E3 reaches **86.17%** in about 4.5 hours on a P100. The GPU differs, so the wall-clock comparison is indicative rather than controlled.
@@ -212,7 +213,7 @@ Section 3.4 of the report (Table 7) lists the five largest **one-directional** p
 - **Pork and steak plating.** E2 confuses `pork chop` → `filet mignon` (29); E3 reduces that pair to 19 while `steak` → `pork chop` reaches 21. Bone presence and fat borders are the main discriminators.
 - **Other large E1/E2 errors.** E1: `cheesecake` → `panna cotta` (40), `samosa` → `spring rolls` (37), `panna cotta` → `cheesecake` (28). E2: `pulled pork sandwich` → `hamburger` (32), `filet mignon` → `steak` (29).
 
-Only pairs present in the saved top-10 lists are cited. The full E2 confusion matrix is archived as `results/resnet50_frozen/test_confusion_matrix.csv`; full E1/E3 matrices were not exported, so we avoid quoting pair counts outside the saved top-10 lists. The frozen control A0 reproduces the same structure with larger counts (`steak` → `filet mignon` 41, `pulled pork sandwich` → `hamburger` 36, `lobster bisque` → `clam chowder` 28), i.e. these pairs are intrinsic to the frozen feature space.
+Only pairs present in the saved top-10 lists are cited. The full E2 confusion matrix is archived as `results/resnet50_frozen/test_confusion_matrix.csv`; full E1/E3 matrices were not exported, so we avoid quoting pair counts outside the saved top-10 lists. The frozen control A0 reproduces the same structure with larger counts (`steak` → `filet mignon` 41, `pulled pork sandwich` → `hamburger` 36, `lobster bisque` → `clam chowder` 28), which suggests these pairs are already present in the frozen features.
 
 ### 7.4 Qualitative Prediction Examples
 ![Correct and incorrect E3 predictions](assets/a2/qualitative_examples_grid.png)
@@ -230,7 +231,7 @@ Four correct and four incorrect E3 predictions on the official test split, sampl
 | **A0 (Frozen, E3 protocol)** | Colab GPU (unlogged) | 15 | 32 | 108.17 min | ~7.2 min | 206,949 |
 | **E3 (ResNet-50 Fine-tuned)** | Tesla P100 (Kaggle) | 15 | 32 | 269.35 min | ~17.9 min | 23,714,981 |
 
-Inference cost was measured with `src/benchmark_inference.py` on a Tesla T4 (batch 32, 640 test images after 5 warm-up batches, fp32, forward only):
+Inference cost was measured with `src/benchmark_inference.py` on a Tesla T4 (batch 32, 20 measured batches after 5 warm-up batches, fp32, end-to-end pipeline: data loading, host-to-device copy, and forward pass):
 
 | Run | Throughput | Latency | Peak allocated VRAM |
 |---|---:|---:|---:|
@@ -243,13 +244,15 @@ The checkpoints are within 1.3% of each other and use the same memory, as expect
 
 ## 9. Limitations & Future Work
 
-- **Overfitting in Late Epochs (E3):** Training accuracy reached 99.88% while validation accuracy peaked at 81.5%, indicating high model capacity relative to data variance. Applying **CutMix**, **MixUp**, or **Label Smoothing** ($0.1$) would likely mitigate overfitting and boost test accuracy past 88%.
+- **Overfitting in Late Epochs (E3):** Training accuracy reached 99.88% while validation accuracy peaked at 81.5%, indicating high model capacity relative to data variance. **CutMix**, **MixUp**, or **Label Smoothing** ($0.1$) are plausible remedies but were not evaluated.
 - **Fixed Input Resolution ($224 \times 224$):** Fine-grained food recognition often relies on small textural details (sesame seeds, herb specks, grain of meat). Increasing input resolution to $384 \times 384$ or $448 \times 448$ could resolve the remaining *steak* vs. *filet mignon* confusion.
 - **Modern Backbone Comparison:** Comparing ResNet-50 with modern Vision Transformers (ViT-B/16) or ConvNeXt-Tiny under the same fine-tuning protocol represents a promising direction for future research.
 - **Residual protocol and hardware differences:** A0 fixes the optimizer, learning rate, and batch size between frozen and fine-tuned models, but E2 and A0 still differ in three settings, so the protocol effect (-4.99 points) is not itself a one-factor estimate. A0 also ran on an unlogged Colab GPU, so only metrics, not wall-clock time, are comparable with E3.
 - **Partial confusion evidence:** full E1/E3 confusion matrices were not exported, so pair counts outside the saved top-10 lists are not quoted; the qualitative grid shows eight examples.
 - **Single seed:** all runs use seed 42. No mean ± standard deviation over independent runs is available.
-- **Single-session inference measurement:** throughput, latency, and peak VRAM come from one forward-only fp32 run on a T4 without TensorRT or mixed precision.
+- **Recorded-metric provenance:** E3 test metrics come from the archived `results/resnet50_finetune/test_metrics.json` of the original Kaggle run; its full-precision accuracy (21,758.5 correct out of 25,250) cannot be reproduced bit-exactly by `src/evaluate.py`, so the rounded 86.17% / 86.10% values are reported.
+- **Learning-rate schedule in saved histories:** E1 has no scheduler; the saved E3 history records a constant 1e-4 rate although cosine annealing is configured, so the schedule actually applied in the E3 run is not independently verified.
+- **Single-session inference measurement:** throughput, latency, and peak VRAM come from one end-to-end fp32 inference run on a T4 without TensorRT or mixed precision; E1 was not benchmarked.
 - **Approximate taxonomy:** the eight culinary domains in Section 2.2 are an analysis aid, not an official Food-101 label hierarchy.
 
 ---
@@ -257,12 +260,12 @@ The checkpoints are within 1.3% of each other and use the same memory, as expect
 ## 10. Links & Deliverables
 - **Dataset Proposal:** [`assignment2/proposal/dataset_proposal.md`](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/proposal/dataset_proposal.md)
 - **Source Code Repository:** [`assignment2/`](https://github.com/tapstoptap/deep-learning-261/tree/main/assignment2)
-- **Report PDF:** [`CHOCO_A2_Report.pdf`](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Report.pdf) ([LaTeX source](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Report.tex))
-- **Slides:** [`CHOCO_A2_Slides.pdf`](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Slides.pdf) ([LaTeX source](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Slides.tex))
+- **Report PDF:** [`CHOCO_A2_Report.pdf`](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Report.pdf)
+- **Slides:** [`CHOCO_A2_Slides.pdf`](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Slides.pdf)
 - **Checkpoints / Reconstruction:** [`assignment2/CHECKPOINTS.md`](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/CHECKPOINTS.md)
-- **Presentation video:** [YouTube](https://youtu.be/xfPd0ZnpQYE) (unlisted) · [script](https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/video_script.md)
+- **Presentation video:** [YouTube](https://youtu.be/xfPd0ZnpQYE) (unlisted)
 
 ---
 
 ## AI Usage Disclosure (Assignment 2)
-Full log recorded in [AI_USAGE.md](../AI_USAGE.md) (Entries #5, #6, #7, #9). Generative AI was used for architecture scaffolding, training pipeline development, log curation, script-based visualization generation, report drafting, and a consistency audit that corrected the EDA class grouping, unsupported confusion counts, and deliverable links. All models were independently trained, logged, and validated on Kaggle and Colab GPU instances.
+Full log recorded in [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md) (Entries #5, #6, #7, #9). Generative AI was used for architecture scaffolding, training pipeline development, log curation, script-based visualization generation, report drafting, and a consistency audit that corrected the EDA class grouping, unsupported confusion counts, and deliverable links. All models were independently trained, logged, and validated on Kaggle and Colab GPU instances.

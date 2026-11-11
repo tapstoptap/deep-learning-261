@@ -1,0 +1,10 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+# Floor (not exact pin): Streamlit Cloud runs a recent Python (3.14 today),
+# and torch only ships cp314 wheels from 2.9 onward. Exact pins would break
+# again whenever Streamlit bumps its Python, so use a minimum.
+torch>=2.9
+torchvision>=0.24
+pillow
+streamlit>=1.30
+huggingface_hub>=0.24
+# The Gradio variant (app.py) additionally needs: pip install "gradio>=5.0"

@@ -248,7 +248,7 @@ def download_food101(destination: str | Path) -> None:
 
     print(f"Downloading Food-101 dataset (~5GB) to {dest}...")
     url = "http://data.vision.ee.ethz.ch/cvl/food-101.tar.gz"
-    md5 = "85eeb7614ecfb77eab51a12226b4ba85"
+    md5 = "85eeb15f3717b99a5da872d97d918f87"
     download_and_extract_archive(
         url=url,
         download_root=str(dest),

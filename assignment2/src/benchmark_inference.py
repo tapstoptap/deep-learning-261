@@ -1,4 +1,8 @@
-"""Measure inference latency, throughput, and peak allocated GPU memory.
+"""Measure end-to-end inference cost: data loading, host-to-device copy, forward.
+
+The timer spans the DataLoader iterator and the model forward, so the reported
+throughput and latency describe the serving pipeline rather than the forward
+pass alone. Increase ``--num-workers`` to overlay loading with compute.
 
 Run in the training environment with a restored checkpoint, e.g.:
 
@@ -85,6 +89,7 @@ def main() -> None:
         torch.cuda.reset_peak_memory_stats()
 
     samples = 0
+    batches = 0
     start = time.perf_counter()
     with torch.no_grad():
         for _ in range(args.measure_batches):
@@ -95,6 +100,7 @@ def main() -> None:
             images = images.to(device, non_blocking=True)
             model(images)
             samples += images.size(0)
+            batches += 1
 
     if device.type == "cuda":
         torch.cuda.synchronize()
@@ -104,8 +110,9 @@ def main() -> None:
         "device": str(device),
         "batch_size": batch_size,
         "samples": samples,
+        "batches": batches,
         "elapsed_sec": elapsed,
-        "latency_ms_per_batch": (elapsed / max(args.measure_batches, 1)) * 1000.0,
+        "latency_ms_per_batch": (elapsed / max(batches, 1)) * 1000.0,
         "throughput_images_per_sec": samples / elapsed if elapsed > 0 else None,
         "peak_allocated_vram_mb": (
             torch.cuda.max_memory_allocated() / (1024 ** 2) if device.type == "cuda" else None

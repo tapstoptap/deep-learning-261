@@ -39,6 +39,29 @@ assignment1/results_norm_test/
 assignment1/report/DL_ASS1/
 assignment1/report/slide/
 assignment1/report/report.zip
+assignment2/report/CHOCO_A2_Report.tex
+assignment2/report/CHOCO_A2_Slides.tex
+assignment2/report/video_script.md
+assignment2/report/video_script.pdf
+# Local copy of docs/assets/a2 used only to compile the report PDF
+assignment2/report/a2/
+
+# LaTeX build artifacts
+assignment2/report/*.aux
+assignment2/report/*.fls
+assignment2/report/*.fdb_latexmk
+assignment2/report/*.log
+assignment2/report/*.out
+assignment2/report/*.toc
+assignment2/report/*.lof
+assignment2/report/*.lot
+assignment2/report/*.nav
+assignment2/report/*.snm
+assignment2/report/*.synctex.gz
+
+# Demo checkpoints are copies of local .pt files; the binaries stay out of Git
+# (see assignment2/CHECKPOINTS.md) and are pushed to the HF Space instead
+assignment2/demo/checkpoints/
 
 # Secrets
 .env
