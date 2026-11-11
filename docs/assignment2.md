@@ -36,7 +36,7 @@ The goal is to map an RGB food image to one of 101 target food categories using 
 - **Dataset:** Food-101 (ETH Zürich Computer Vision Lab; Bossard et al., ECCV 2014).
 - **Volume:** 101,000 RGB images across 101 classes.
 - **License and use:** the images originate from Foodspotting and are used for academic coursework only. Image files are not redistributed in this repository.
-- **Format:** JPEG; the original images have a maximum side of 512 px and are resized to $224 \times 224$ for training and evaluation.
+- **Format:** JPEG; the original images have a maximum side of 512 px and are resized to 224 × 224 px for training and evaluation.
 - **Class balance:** the official split has 750 training and 250 test images per class; the project split therefore has 675/75/250 images per class.
 - **Split Protocol (No Data Leakage):**
   - **Training:** 68,175 images (90% of official training split, exactly 675 images/class).
@@ -84,27 +84,27 @@ Raw Image (RGB)
 An example training batch is a `float32` tensor of shape `[B, 3, 224, 224]`, where `B=64` for E1/E2 and `B=32` for E3. Training uses only random horizontal flipping; validation and test use resize and normalization with no augmentation.
 
 ### 3.2 Model Architectures & Comparison Design
-We compare three adaptation regimes plus a matched frozen control (A0) under a shared data split and evaluation protocol. They are a **protocol comparison**, not three one-factor ablations: E1 vs E2 changes architecture and initialization, while E2 vs E3 changes unfreezing *and* the optimization protocol (Adam vs AdamW, learning rate, batch size, and GPU). Fixed factors are the train/validation/test split, input size, seed 42, weight decay, checkpoint rule, and metric set (E2/E3/A0 also share a configured cosine schedule; E1 trains at a constant rate). The combined E2→E3 gap is therefore descriptive, not a clean causal estimate of unfreezing alone. A fourth run, **A0**, resolves this: it keeps the E2 frozen backbone but trains it with the E3 protocol (AdamW, $10^{-4}$, batch 32, 15 epochs), so A0 and E3 share the optimisation protocol and differ in `freeze_backbone` (A0 also ran on an unlogged Colab GPU, so hardware is not matched).
+We compare three adaptation regimes plus a matched frozen control (A0) under a shared data split and evaluation protocol. They are a **protocol comparison**, not three one-factor ablations: E1 vs E2 changes architecture and initialization, while E2 vs E3 changes unfreezing *and* the optimization protocol (Adam vs AdamW, learning rate, batch size, and GPU). Fixed factors are the train/validation/test split, input size, seed 42, weight decay, checkpoint rule, and metric set (E2/E3/A0 also share a configured cosine schedule; E1 trains at a constant rate). The combined E2→E3 gap is therefore descriptive, not a clean causal estimate of unfreezing alone. A fourth run, **A0**, resolves this: it keeps the E2 frozen backbone but trains it with the E3 protocol (AdamW, 10⁻⁴, batch 32, 15 epochs), so A0 and E3 share the optimisation protocol and differ in `freeze_backbone` (A0 also ran on an unlogged Colab GPU, so hardware is not matched).
 
 1. **E1 — Baseline Simple CNN (Trained from scratch):**
-   - 4 Convolutional blocks: `Conv2d(3, 32)` $\rightarrow$ `Conv2d(32, 64)` $\rightarrow$ `Conv2d(64, 128)` $\rightarrow$ `Conv2d(128, 256)`. Each block features `BatchNorm2d`, `ReLU`, and `MaxPool2d(2)`.
+   - 4 Convolutional blocks: `Conv2d(3, 32)` → `Conv2d(32, 64)` → `Conv2d(64, 128)` → `Conv2d(128, 256)`. Each block features `BatchNorm2d`, `ReLU`, and `MaxPool2d(2)`.
    - Global representation: `AdaptiveAvgPool2d((1, 1))`.
-   - Classification head: `Dropout(0.3)` $\rightarrow$ `Linear(256, 101)`.
+   - Classification head: `Dropout(0.3)` → `Linear(256, 101)`.
    - Total parameters: **414,853** (all trainable).
 
 2. **E2 — ResNet-50 Feature Extractor (Frozen Backbone):**
    - Backbone: ResNet-50 pretrained on ImageNet-1k (50 layers, deep residual bottlenecks).
    - Backbone parameters: 23,508,032 (strictly **frozen**, `requires_grad = False`). Only parameters are frozen: the model still runs in training mode, so the backbone BatchNorm running statistics keep updating from Food-101 batches while their affine weights stay fixed.
-   - Classification head: `Dropout(0.2)` $\rightarrow$ `Linear(2048, 101)`.
+   - Classification head: `Dropout(0.2)` → `Linear(2048, 101)`.
    - Trainable parameters: **206,949** (only 0.87% of total network parameters).
 
 3. **E3 — ResNet-50 Full Fine-Tuning (End-to-End Adaptation):**
    - Backbone: ResNet-50 initialized from ImageNet-1k weights.
-   - All 23,714,981 parameters are **unfrozen** and fine-tuned end-to-end at a calibrated learning rate ($\eta = 10^{-4}$) with AdamW; the config specifies cosine annealing, confirmed by the exported Kaggle run, while the saved history logs a constant rate (a curation artifact; see Limitations).
+   - All 23,714,981 parameters are **unfrozen** and fine-tuned end-to-end at a calibrated learning rate (η = 10⁻⁴) with AdamW; the config specifies cosine annealing, confirmed by the exported Kaggle run, while the saved history logs a constant rate (a curation artifact; see Limitations).
 
 4. **A0 — Matched-control Frozen ResNet-50:**
    - Same frozen backbone and head as E2 (206,949 trainable parameters).
-   - Trained with the E3 protocol: AdamW, $10^{-4}$, batch 32, cosine schedule, 15 epochs, seed 42.
+   - Trained with the E3 protocol: AdamW, 10⁻⁴, batch 32, cosine schedule, 15 epochs, seed 42.
    - The only intended experimental difference from E3 is `freeze_backbone`; hardware also differs (A0 ran on an unlogged Colab GPU, E3 on a P100). The difference from E2 is the optimizer, learning rate, batch size, and GPU.
 
 ---
@@ -114,12 +114,12 @@ We compare three adaptation regimes plus a matched frozen control (A0) under a s
 | Parameter | E1 (Baseline CNN) | E2 (ResNet-50 Frozen) | A0 (Frozen, E3 protocol) | E3 (ResNet-50 Fine-tuned) |
 |---|:---:|:---:|:---:|:---:|
 | **Hardware** | Tesla T4 GPU (Kaggle) | Tesla T4 GPU (Kaggle) | Colab GPU (model not logged) | Tesla P100 GPU (Kaggle) |
-| **Input Resolution** | $224 \times 224 \times 3$ | $224 \times 224 \times 3$ | $224 \times 224 \times 3$ | $224 \times 224 \times 3$ |
+| **Input Resolution** | 224 × 224 × 3 | 224 × 224 × 3 | 224 × 224 × 3 | 224 × 224 × 3 |
 | **Batch Size** | 64 | 64 | 32 | 32 |
 | **Epochs** | 20 | 15 | 15 | 15 |
-| **Optimizer** | AdamW ($\beta_1=0.9, \beta_2=0.999$) | Adam | AdamW | AdamW |
-| **Initial Learning Rate** | $1 \times 10^{-3}$ | $1 \times 10^{-3}$ | $1 \times 10^{-4}$ | $1 \times 10^{-4}$ |
-| **Weight Decay** | $1 \times 10^{-4}$ | $1 \times 10^{-4}$ | $1 \times 10^{-4}$ | $1 \times 10^{-4}$ |
+| **Optimizer** | AdamW (β₁ = 0.9, β₂ = 0.999) | Adam | AdamW | AdamW |
+| **Initial Learning Rate** | 1 × 10⁻³ | 1 × 10⁻³ | 1 × 10⁻⁴ | 1 × 10⁻⁴ |
+| **Weight Decay** | 1 × 10⁻⁴ | 1 × 10⁻⁴ | 1 × 10⁻⁴ | 1 × 10⁻⁴ |
 | **LR Scheduler** | None (constant) | CosineAnnealingLR | CosineAnnealingLR | CosineAnnealingLR |
 | **Seed** | 42 | 42 | 42 | 42 |
 | **Checkpoint rule** | Best validation macro-F1 | Best validation macro-F1 | Best validation macro-F1 | Best validation macro-F1 |
@@ -169,7 +169,7 @@ Training time is wall-clock time on the listed GPU. E1/E2 ran on a Tesla T4, E3 
 
 ## 6. Comparison and Discussion
 
-| Dimension | E1: Baseline CNN | E2: ResNet-50 Frozen | A0: Frozen, E3 protocol | E3: ResNet-50 Fine-tuned | $\Delta$ (E2 vs E1) | $\Delta$ (E3 vs E2) | $\Delta$ (E3 vs A0) | $\Delta$ (E3 vs E1) |
+| Dimension | E1: Baseline CNN | E2: ResNet-50 Frozen | A0: Frozen, E3 protocol | E3: ResNet-50 Fine-tuned | Δ (E2 vs E1) | Δ (E3 vs E2) | Δ (E3 vs A0) | Δ (E3 vs E1) |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **Test Accuracy** | 51.96% | 66.70% | 61.71% | **86.17%** | **+14.74 pp** | **+19.47 pp** | **+24.46 pp** | **+34.21 pp** |
 | **Test Macro-F1** | 51.21% | 66.36% | 60.88% | **86.10%** | **+15.15 pp** | **+19.74 pp** | **+25.22 pp** | **+34.89 pp** |
@@ -244,8 +244,8 @@ The checkpoints are within 1.3% of each other and use the same memory, as expect
 
 ## 9. Limitations & Future Work
 
-- **Overfitting in Late Epochs (E3):** Training accuracy reached 99.88% while validation accuracy peaked at 81.5%, indicating high model capacity relative to data variance. **CutMix**, **MixUp**, or **Label Smoothing** ($0.1$) are plausible remedies but were not evaluated.
-- **Fixed Input Resolution ($224 \times 224$):** Fine-grained food recognition often relies on small textural details (sesame seeds, herb specks, grain of meat). Increasing input resolution to $384 \times 384$ or $448 \times 448$ could resolve the remaining *steak* vs. *filet mignon* confusion.
+- **Overfitting in Late Epochs (E3):** Training accuracy reached 99.88% while validation accuracy peaked at 81.5%, indicating high model capacity relative to data variance. **CutMix**, **MixUp**, or **Label Smoothing** (0.1) are plausible remedies but were not evaluated.
+- **Fixed Input Resolution (224 × 224):** Fine-grained food recognition often relies on small textural details (sesame seeds, herb specks, grain of meat). Increasing input resolution to 384 × 384 or 448 × 448 could resolve the remaining *steak* vs. *filet mignon* confusion.
 - **Modern Backbone Comparison:** Comparing ResNet-50 with modern Vision Transformers (ViT-B/16) or ConvNeXt-Tiny under the same fine-tuning protocol represents a promising direction for future research.
 - **Residual protocol and hardware differences:** A0 fixes the optimizer, learning rate, and batch size between frozen and fine-tuned models, but E2 and A0 still differ in three settings, so the protocol effect (-4.99 points) is not itself a one-factor estimate. A0 also ran on an unlogged Colab GPU, so only metrics, not wall-clock time, are comparable with E3.
 - **Partial confusion evidence:** full E1/E3 confusion matrices were not exported, so pair counts outside the saved top-10 lists are not quoted; the qualitative grid shows eight examples.
