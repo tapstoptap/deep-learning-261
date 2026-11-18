@@ -1,0 +1,64 @@
+{
+  "audited": 100,
+  "total_rows": 100,
+  "not_yet_filled": 0,
+  "verdicts": {
+    "matched": {
+      "count": 98,
+      "pct": 98.0,
+      "wilson95_pct": [
+        93.0,
+        99.4
+      ]
+    },
+    "weak": {
+      "count": 1,
+      "pct": 1.0,
+      "wilson95_pct": [
+        0.2,
+        5.4
+      ]
+    },
+    "mismatched": {
+      "count": 1,
+      "pct": 1.0,
+      "wilson95_pct": [
+        0.2,
+        5.4
+      ]
+    }
+  },
+  "by_answer_type": {
+    "number": {
+      "matched": 12,
+      "weak": 0,
+      "mismatched": 1
+    },
+    "other": {
+      "matched": 55,
+      "weak": 1,
+      "mismatched": 0
+    },
+    "yes/no": {
+      "matched": 31,
+      "weak": 0,
+      "mismatched": 0
+    }
+  },
+  "notes_on_non_matched": [
+    {
+      "question_id": "446870003",
+      "question": "How much is a cronut?",
+      "mc_answer": "1.00",
+      "verdict": "mismatched",
+      "note": "no price shown"
+    },
+    {
+      "question_id": "60018029",
+      "question": "Where is the black arrow pointing?",
+      "mc_answer": "left",
+      "verdict": "weak",
+      "note": "three arrows, question denotes only one"
+    }
+  ]
+}
