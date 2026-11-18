@@ -1,0 +1,76 @@
+{
+  "checks": {
+    "Answer vocab built from TRAIN rows only (no val/test question ids used)": true,
+    "Image ids disjoint across train/val/test": true,
+    "No near-dup group (real pairs) crosses splits": true,
+    "Question ids disjoint across train/val/test": true,
+    "TVD answer_type <= 0.02 (0.0064)": true,
+    "TVD top-20 question_type <= 0.02 (0.0229)": false,
+    "Train/val image counts are 9000/1000 (got 9000/1000)": true
+  },
+  "counts": {
+    "test": {
+      "empty_majority_answers_not_filtered": 6,
+      "exact_dup_image_question_pairs_not_filtered": 6,
+      "images": 5000,
+      "of_which_same_majority_answer": 3,
+      "questions": 26221,
+      "questions_raw": 26221,
+      "removed": 0
+    },
+    "train": {
+      "images": 9000,
+      "questions": 48245,
+      "questions_raw": 48255,
+      "removed": 10
+    },
+    "val": {
+      "images": 1000,
+      "questions": 5265,
+      "questions_raw": 5267,
+      "removed": 2
+    }
+  },
+  "phase3_inputs_sha256": {
+    "near_dups_within_trainpool_review.csv": "e16959514237278818274790ebd4a1afbd51bfb8d197d519aa35f0e73cdf56e7",
+    "test_image_ids.txt": "f4f694971e8ae1916ef596f819d88ca3a58f8a916f2231b7ca10ed3fd80c8358",
+    "test_question_ids.csv": "d3082d007e7bd2b451baa42c680695a4706d3f1d3ab802448f44f999e8552843",
+    "train_pool_image_ids.txt": "10c47fd4c9c8ca28ff17a2e79669f30f59912ffcec8758e10738926b6324149d",
+    "train_pool_question_ids.csv": "3dabc2a1601c5a8968f37d57db7b4a8854ad603994598ef5b18890a5c9d16696"
+  },
+  "rules": {
+    "cleaning_test": "none (counts reported only)",
+    "cleaning_train_val": [
+      "drop empty normalized majority answer",
+      "exact (image_id, question) duplicates: identical majority answer -> keep lowest question_id; different majority answers -> keep both"
+    ],
+    "real_near_dup_pairs_grouped": [
+      [
+        9878,
+        141785
+      ],
+      [
+        167028,
+        224112
+      ]
+    ],
+    "split": "by image from the 10k train2014 pool; 9000 train / 1000 val; units = connected components of real_duplicate pairs, shuffled with random.Random(261), greedily added to val while it fits",
+    "vocab": "train rows only, sorted by (-count, answer)"
+  },
+  "seed": 261,
+  "sha256": {
+    "removed.csv": "dab53da36d4c5e4844fe8819222adac90c7d1efcad59e3e104717cb067560912",
+    "test_image_ids.txt": "8053ead1439801bff7aa81b77f489ee7fb1a34b429152b09c7139e147765325d",
+    "test_question_ids.csv": "d3082d007e7bd2b451baa42c680695a4706d3f1d3ab802448f44f999e8552843",
+    "train_image_ids.txt": "7dae12473f369c4ff0bab06e596abb7e7ae83e9c15d8380e340ed880ea6e94d9",
+    "train_question_ids.csv": "e2749e7d930a396f27352420cc860914150d346f34b653459d362e287fddb5f2",
+    "val_image_ids.txt": "679c18595d94a3f17c079b0b5251f5625f9712de1b16b93cc4deb5cdcac432ac",
+    "val_question_ids.csv": "70f48fb45f7878bd1910c3a018d9be3f9ae8bb0bc309090493d314c094a75298"
+  },
+  "train_vocab_size": 5335,
+  "tvd": {
+    "answer_type": 0.00637,
+    "limit": 0.02,
+    "top20_question_type": 0.0229
+  }
+}

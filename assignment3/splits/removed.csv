@@ -1,0 +1,13 @@
+question_id,reason,split
+3008001,duplicate_image_question_same_answer,train
+107982029,duplicate_image_question_same_answer,train
+138572001,duplicate_image_question_same_answer,train
+182801004,empty_majority_answer,train
+195951000,empty_majority_answer,train
+215522003,duplicate_image_question_same_answer,train
+222172000,empty_majority_answer,val
+366116002,duplicate_image_question_same_answer,train
+393140002,empty_majority_answer,train
+423448004,empty_majority_answer,train
+554455002,duplicate_image_question_same_answer,val
+559780002,empty_majority_answer,train
