@@ -10,3 +10,4 @@ eda_outputs/subset/*
 !eda_outputs/subset/*_question_ids.csv
 !eda_outputs/subset/near_dups_*.csv
 !eda_outputs/audit_summary.json
+!eda_outputs/audit_sample.csv
