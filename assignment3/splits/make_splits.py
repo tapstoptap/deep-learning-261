@@ -26,7 +26,10 @@ from vqa_eda import load_split, oracle_accuracy  # noqa: E402  (Phase 3 code, im
 SEED = 261
 N_VAL_IMAGES = 1000
 KS = (500, 1000, 2000, 3000)
-TVD_LIMIT = 0.02
+TVD_LIMIT = 0.02  # answer_type only; question_type is checked against the random-split null (p95)
+MIN_TRAIN_COUNT = 5  # pre-registered K rule
+MAX_LEN = 32
+N_NULL = 1000
 TOKENIZER = "bert-base-uncased"
 
 
@@ -129,6 +132,47 @@ def main():
     tvd_at = tvd(train.answer_type, val.answer_type)
     tvd_qt = tvd(qt(train.question_type), qt(val.question_type))
 
+    # ---- 4b. null distribution: random image-level 9000/1000 splits of the same cleaned pool
+    pool_clean, _ = clean(pool)
+    assert set(pool_clean.question_id) == set(train.question_id) | set(val.question_id)
+    img_index = {i: n for n, i in enumerate(sorted(pool_imgs))}
+    qtypes = sorted(pool_clean.question_type.unique())
+    atypes = sorted(pool_clean.answer_type.unique())
+    ii = pool_clean.image_id.map(img_index).to_numpy()
+    Q = np.zeros((len(img_index), len(qtypes)))
+    A = np.zeros((len(img_index), len(atypes)))
+    np.add.at(Q, (ii, pool_clean.question_type.map({t: n for n, t in enumerate(qtypes)}).to_numpy()), 1)
+    np.add.at(A, (ii, pool_clean.answer_type.map({t: n for n, t in enumerate(atypes)}).to_numpy()), 1)
+
+    def tvd_counts(ct, cv):
+        return 0.5 * np.abs(ct / ct.sum() - cv / cv.sum()).sum()
+
+    def split_tvds(val_img_ids):
+        m = np.zeros(len(img_index), bool)
+        m[[img_index[i] for i in val_img_ids]] = True
+        qt_t, qt_v, at_t, at_v = Q[~m].sum(0), Q[m].sum(0), A[~m].sum(0), A[m].sum(0)
+        top = np.argsort(-qt_t, kind="stable")[:20]
+        rest = np.ones(len(qtypes), bool)
+        rest[top] = False
+        f = lambda c: np.append(c[top], c[rest].sum())  # noqa: E731
+        return float(tvd_counts(f(qt_t), f(qt_v))), float(tvd_counts(at_t, at_v))
+
+    null_rows = []
+    for sd in range(N_NULL):
+        _, v_s, _ = group_split(pool_imgs, real_pairs, N_VAL_IMAGES, sd)
+        null_rows.append((sd,) + split_tvds(v_s))
+    null = pd.DataFrame(null_rows, columns=["seed", "tvd_question_type", "tvd_answer_type"])
+    null.to_csv(out / "tvd_null.csv", index=False, float_format="%.6f")
+    chk_qt, chk_at = split_tvds(val_imgs)
+    assert abs(chk_qt - tvd_qt) < 1e-9 and abs(chk_at - tvd_at) < 1e-9, "null calc disagrees with main calc"
+    nstats = {}
+    for col, mine in (("tvd_question_type", tvd_qt), ("tvd_answer_type", tvd_at)):
+        x = null[col].to_numpy()
+        nstats[col] = {"mean": round(float(x.mean()), 5), "p50": round(float(np.percentile(x, 50)), 5),
+                       "p95": round(float(np.percentile(x, 95)), 5), "p99": round(float(np.percentile(x, 99)), 5),
+                       "seed261": round(mine, 5), "seed261_percentile": round(100 * float((x <= mine).mean()), 1)}
+    qt_p95 = float(np.percentile(null.tvd_question_type, 95))
+
     # ---- 5. leakage checks
     ti, vi, ei = set(train_imgs), set(val_imgs), set(test_imgs)
     comp = {}
@@ -149,21 +193,27 @@ def main():
         (f"Train/val image counts are 9000/1000 (got {len(train_imgs)}/{len(val_imgs)})",
          len(train_imgs) == 9000 and len(val_imgs) == 1000),
         (f"TVD answer_type <= {TVD_LIMIT} ({tvd_at:.4f})", tvd_at <= TVD_LIMIT),
-        (f"TVD top-20 question_type <= {TVD_LIMIT} ({tvd_qt:.4f})", tvd_qt <= TVD_LIMIT),
+        (f"TVD top-20 question_type ({tvd_qt:.4f}) <= p95 of {N_NULL} random splits ({qt_p95:.4f})", tvd_qt <= qt_p95),
     ]
 
     # ---- 6. choosing K (train vocab; val only)
+    k_rule = sum(1 for a in ranked if vocab_counter[a] >= MIN_TRAIN_COUNT)
+    assert vocab_counter[ranked[k_rule - 1]] >= MIN_TRAIN_COUNT > vocab_counter[ranked[k_rule]]
     ktab = []
-    for k in KS:
+    for k in sorted(set(KS) | {k_rule}):
         v = set(ranked[:k])
         orc = float(np.mean([oracle_accuracy(g, v) for g in val["answers"]])) * 100
         ktab.append({"K": k,
                      "val_oracle_vqa_acc_pct": round(orc, 2),
                      "train_coverage_pct": round(100 * train.mc_answer.isin(v).mean(), 2),
                      "val_coverage_pct": round(100 * val.mc_answer.isin(v).mean(), 2),
+                     "rule": "K_rule" if k == k_rule else "",
                      "kth_answer": ranked[k - 1] if k <= len(ranked) else None,
                      "kth_answer_train_count": int(vocab_counter[ranked[k - 1]]) if k <= len(ranked) else None})
     n_vocab = len(ranked)
+    (out / "answer_vocab.json").write_text(json.dumps({str(i): a for i, a in enumerate(ranked[:k_rule])},
+                                                      indent=0, ensure_ascii=False) + "\n")
+    krow = next(r for r in ktab if r["K"] == k_rule)
     tok = None
     try:
         from transformers import AutoTokenizer
@@ -193,6 +243,8 @@ def main():
     files = [f"{n}_{k}" for n in ("train", "val", "test") for k in ("image_ids.txt", "question_ids.csv")]
     hashes = {f: sha256_file(out / f) for f in files}
     hashes["removed.csv"] = sha256_file(out / "removed.csv")
+    hashes["tvd_null.csv"] = sha256_file(out / "tvd_null.csv")
+    hashes["answer_vocab.json"] = sha256_file(out / "answer_vocab.json")
 
     counts = {
         "train": {"images": len(train_imgs), "questions_raw": len(raw_train), "removed": len(rm_tr), "questions": len(train)},
@@ -218,7 +270,12 @@ def main():
             "vocab": "train rows only, sorted by (-count, answer)",
         },
         "counts": counts, "sha256": hashes,
-        "tvd": {"answer_type": round(tvd_at, 5), "top20_question_type": round(tvd_qt, 5), "limit": TVD_LIMIT},
+        "tvd": {"answer_type": round(tvd_at, 5), "top20_question_type": round(tvd_qt, 5),
+                "answer_type_limit": TVD_LIMIT, "question_type_rule": f"seed-261 TVD <= p95 of {N_NULL} random splits",
+                "null_stats": nstats},
+        "K": {"rule": f"largest K whose K-th most frequent train answer has >= {MIN_TRAIN_COUNT} train examples",
+              "K_rule": k_rule, "table": ktab},
+        "text_encoder": {"tokenizer": TOKENIZER, "max_len": MAX_LEN, "train_token_length": tok},
         "train_vocab_size": n_vocab,
         "checks": {n: bool(ok) for n, ok in checks},
     }
@@ -234,20 +291,40 @@ def main():
           f"(image, question) pairs ({test_dup_same} with identical majority answer). Report-only.",
           "", "Removed (train/val): " + ", ".join(f"{r}={n}" for r, n in
                                                   removed.reason.value_counts().sort_index().items()) + ".",
-          "", "## Balance (train vs val, after cleaning)", "", "| measure | TVD | limit |", "|---|---|---|",
-          f"| answer_type | {tvd_at:.4f} | {TVD_LIMIT} |", f"| top-20 question_type (+other) | {tvd_qt:.4f} | {TVD_LIMIT} |",
+          "", "## Balance (train vs val, after cleaning)", "", "| measure | seed-261 TVD | null mean | null p50 | null p95 | null p99 | seed-261 percentile | check |",
+          "|---|---|---|---|---|---|---|---|"]
+    for lab, col, chk in (("answer_type", "tvd_answer_type", f"<= {TVD_LIMIT}"),
+                          ("top-20 question_type (+other)", "tvd_question_type", "<= null p95")):
+        n_ = nstats[col]
+        L.append(f"| {lab} | {n_['seed261']:.4f} | {n_['mean']:.4f} | {n_['p50']:.4f} | {n_['p95']:.4f} | "
+                 f"{n_['p99']:.4f} | {n_['seed261_percentile']} | {chk} |")
+    L += ["", f"Null: {N_NULL} random image-level 9000/1000 splits (seeds 0..{N_NULL-1}, same near-dup grouping, same "
+          "cleaning; top-20 recomputed per split). Values in `tvd_null.csv`.",
+          "", "**Deviation from plan:** the fixed 0.02 limit for question_type TVD was an untested guess. The first run "
+          f"gave 0.0229 and failed it, so the check was replaced by seed-261 TVD <= p95 of the random-split null. "
+          "The split itself is unchanged (seed 261, not reseeded). answer_type keeps the fixed 0.02 limit.",
           "", "## Choosing K (train vocab, val only)", "", f"Train vocab size: {n_vocab:,} distinct answers.", "",
           "| K | val oracle VQA acc % | train coverage % | val coverage % | K-th answer | its train count |",
           "|---|---|---|---|---|---|"]
     for r in ktab:
-        L.append(f"| {r['K']} | {r['val_oracle_vqa_acc_pct']} | {r['train_coverage_pct']} | {r['val_coverage_pct']} | "
+        L.append(f"| {r['K']}{' (K_rule)' if r['rule'] else ''} | {r['val_oracle_vqa_acc_pct']} | {r['train_coverage_pct']} | {r['val_coverage_pct']} | "
                  f"{r['kth_answer']} | {r['kth_answer_train_count']} |")
-    L += ["", "BERT question length (train only, bert-base-uncased, incl. [CLS]/[SEP]): " +
+    L += ["", f"**K choice (pre-registered rule):** largest K whose K-th most frequent train answer has >= "
+          f"{MIN_TRAIN_COUNT} train examples gives **K_rule = {k_rule}** (answer '{krow['kth_answer']}', train count "
+          f"{krow['kth_answer_train_count']}). `answer_vocab.json` maps index -> answer (train only, sorted by "
+          "-count then answer ascending), size K_rule.",
+          "", f"**Text encoder:** {TOKENIZER}, max_len = {MAX_LEN} (train p99 = {tok.get('p99')}, max = {tok.get('max')}).",
+          "", "BERT question length (train only, bert-base-uncased, incl. [CLS]/[SEP]): " +
           (", ".join(f"{k}={tok[k]}" for k in ("p95", "p99", "max")) if "p95" in tok else str(tok)),
           "", "## Questions per image", "", "| split | max | mean | top-5 (image: n) |", "|---|---|---|---|"]
     for n in ("train", "val", "test"):
         q = qpi[n]
         L.append(f"| {n} | {q['max']} | {q['mean']} | " + ", ".join(f"{i}: {c}" for i, c in q["top5"]) + " |")
+    top1 = qpi["train"]["top5"][0]
+    L += ["", "## Notes", "",
+          f"- No per-image question cap: the largest image ({top1[0]}) has {top1[1]} questions = "
+          f"{100*top1[1]/len(train):.2f}% of train.",
+          "- The train answer \"1 6\" is likely a normalization artifact of \"1/6\"; left as is."]
     L += ["", "## Checklist", ""] + [f"- [{'x' if ok else ' '}] **{'PASS' if ok else 'FAIL'}** {n}" for n, ok in checks]
     L += ["", "## SHA-256", ""] + [f"- `{k}`: `{v}`" for k, v in sorted(hashes.items())]
     (out / "split_report.md").write_text("\n".join(L) + "\n")

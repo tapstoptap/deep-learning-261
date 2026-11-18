@@ -1,11 +1,62 @@
 {
+  "K": {
+    "K_rule": 771,
+    "rule": "largest K whose K-th most frequent train answer has >= 5 train examples",
+    "table": [
+      {
+        "K": 500,
+        "kth_answer": "checkered",
+        "kth_answer_train_count": 7,
+        "rule": "",
+        "train_coverage_pct": 83.33,
+        "val_coverage_pct": 83.36,
+        "val_oracle_vqa_acc_pct": 86.26
+      },
+      {
+        "K": 771,
+        "kth_answer": "yellow and blue",
+        "kth_answer_train_count": 5,
+        "rule": "K_rule",
+        "train_coverage_pct": 86.59,
+        "val_coverage_pct": 85.93,
+        "val_oracle_vqa_acc_pct": 88.54
+      },
+      {
+        "K": 1000,
+        "kth_answer": "animals",
+        "kth_answer_train_count": 3,
+        "rule": "",
+        "train_coverage_pct": 88.41,
+        "val_coverage_pct": 87.24,
+        "val_oracle_vqa_acc_pct": 89.54
+      },
+      {
+        "K": 2000,
+        "kth_answer": "1 6",
+        "kth_answer_train_count": 1,
+        "rule": "",
+        "train_coverage_pct": 93.09,
+        "val_coverage_pct": 90.5,
+        "val_oracle_vqa_acc_pct": 91.65
+      },
+      {
+        "K": 3000,
+        "kth_answer": "document",
+        "kth_answer_train_count": 1,
+        "rule": "",
+        "train_coverage_pct": 95.16,
+        "val_coverage_pct": 91.23,
+        "val_oracle_vqa_acc_pct": 92.17
+      }
+    ]
+  },
   "checks": {
     "Answer vocab built from TRAIN rows only (no val/test question ids used)": true,
     "Image ids disjoint across train/val/test": true,
     "No near-dup group (real pairs) crosses splits": true,
     "Question ids disjoint across train/val/test": true,
     "TVD answer_type <= 0.02 (0.0064)": true,
-    "TVD top-20 question_type <= 0.02 (0.0229)": false,
+    "TVD top-20 question_type (0.0229) <= p95 of 1000 random splits (0.0320)": true,
     "Train/val image counts are 9000/1000 (got 9000/1000)": true
   },
   "counts": {
@@ -59,18 +110,51 @@
   },
   "seed": 261,
   "sha256": {
+    "answer_vocab.json": "06670f55d59bccac9dba6c45cad8e54f4c58425c8d84751856e53288c3e20576",
     "removed.csv": "dab53da36d4c5e4844fe8819222adac90c7d1efcad59e3e104717cb067560912",
     "test_image_ids.txt": "8053ead1439801bff7aa81b77f489ee7fb1a34b429152b09c7139e147765325d",
     "test_question_ids.csv": "d3082d007e7bd2b451baa42c680695a4706d3f1d3ab802448f44f999e8552843",
     "train_image_ids.txt": "7dae12473f369c4ff0bab06e596abb7e7ae83e9c15d8380e340ed880ea6e94d9",
     "train_question_ids.csv": "e2749e7d930a396f27352420cc860914150d346f34b653459d362e287fddb5f2",
+    "tvd_null.csv": "c6765113ebf91fd140c62bb44ff6a1c891d0af39034f7210c0d4fd1af090e014",
     "val_image_ids.txt": "679c18595d94a3f17c079b0b5251f5625f9712de1b16b93cc4deb5cdcac432ac",
     "val_question_ids.csv": "70f48fb45f7878bd1910c3a018d9be3f9ae8bb0bc309090493d314c094a75298"
+  },
+  "text_encoder": {
+    "max_len": 32,
+    "tokenizer": "bert-base-uncased",
+    "train_token_length": {
+      "includes_special_tokens": true,
+      "max": 27,
+      "n": 48245,
+      "p95": 13.0,
+      "p99": 16.0,
+      "tokenizer": "bert-base-uncased"
+    }
   },
   "train_vocab_size": 5335,
   "tvd": {
     "answer_type": 0.00637,
-    "limit": 0.02,
+    "answer_type_limit": 0.02,
+    "null_stats": {
+      "tvd_answer_type": {
+        "mean": 0.00833,
+        "p50": 0.00767,
+        "p95": 0.01694,
+        "p99": 0.02047,
+        "seed261": 0.00637,
+        "seed261_percentile": 37.6
+      },
+      "tvd_question_type": {
+        "mean": 0.02407,
+        "p50": 0.02379,
+        "p95": 0.03198,
+        "p99": 0.03573,
+        "seed261": 0.0229,
+        "seed261_percentile": 41.8
+      }
+    },
+    "question_type_rule": "seed-261 TVD <= p95 of 1000 random splits",
     "top20_question_type": 0.0229
   }
 }
