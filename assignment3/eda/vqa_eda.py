@@ -58,6 +58,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 SPLITS = ("train2014", "val2014")
 ANSWER_TYPES = ("yes/no", "number", "other")
+# one colour per answer type, shared by F1, F2 and F6
+ANSWER_TYPE_COLORS = {"yes/no": "tab:blue", "number": "tab:orange", "other": "tab:green"}
 
 # ---------------------------------------------------------------------------
 # Answer normalisation - same rules as the official VQA evaluation script
@@ -518,7 +520,7 @@ def _save(fig_dir: Path, name: str):
     plt.close()
 
 
-def _grid(rows, data_dir: Path, title_fn, path: Path, ncols=3):
+def _grid(rows, data_dir: Path, title_fn, path: Path, ncols=3, suptitle=None):
     from PIL import Image
     rows = list(rows)
     if not rows:
@@ -536,6 +538,8 @@ def _grid(rows, data_dir: Path, title_fn, path: Path, ncols=3):
         axi.axis("off")
     for axi in list(axs.flat)[len(rows):]:
         axi.axis("off")
+    if suptitle:
+        fig.suptitle(suptitle, fontsize=11)
     plt.tight_layout()
     plt.savefig(path, dpi=110)
     plt.close()
@@ -549,19 +553,22 @@ def save_figures(sub_tr, sub_te, img_df, clip_df, out: Path, data_dir: Path, see
     # F1 answer types per subset
     ct = (both.groupby("subset")["answer_type"].value_counts(normalize=True)
           .mul(100).unstack(fill_value=0))
-    ct.plot(kind="bar", figsize=(6, 4))
-    plt.ylabel("% of questions"); plt.title("Answer type distribution"); plt.xticks(rotation=0)
+    ct = ct[[t for t in ANSWER_TYPES if t in ct.columns]]
+    ct.plot(kind="bar", figsize=(6, 4), color=[ANSWER_TYPE_COLORS[t] for t in ct.columns])
+    n_tr, n_te = len(sub_tr), len(sub_te)
+    plt.ylabel("% of questions"); plt.xticks(rotation=0)
+    plt.title(f"Answer type distribution\n(train pool n={n_tr:,} questions, test n={n_te:,})")
     _save(figs, "F1_answer_types.png")
 
     # F2 top-30 majority answers, coloured by answer type
     top = Counter(sub_tr["mc_answer"]).most_common(30)
     atype = sub_tr.groupby("mc_answer")["answer_type"].agg(lambda s: s.mode().iat[0])
-    colours = {"yes/no": "tab:blue", "number": "tab:orange", "other": "tab:green"}
+    colours = ANSWER_TYPE_COLORS
     plt.figure(figsize=(10, 4))
     plt.bar([a for a, _ in top], [c for _, c in top],
             color=[colours.get(atype.get(a), "gray") for a, _ in top])
     plt.xticks(rotation=70, ha="right"); plt.ylabel("questions")
-    plt.title("Top-30 majority answers (train pool)")
+    plt.title(f"Top-30 majority answers (train pool, n={n_tr:,} questions)")
     from matplotlib.patches import Patch
     plt.legend(handles=[Patch(color=c, label=t) for t, c in colours.items()], title="answer type")
     _save(figs, "F2_top30_answers.png")
@@ -572,41 +579,54 @@ def save_figures(sub_tr, sub_te, img_df, clip_df, out: Path, data_dir: Path, see
     plt.figure(figsize=(6, 4))
     plt.plot(np.arange(1, len(cum) + 1), cum)
     plt.xscale("log"); plt.grid(True, which="both", alpha=0.3)
-    for k in (100, 1000, 3000):
+    for k in (500, 1000, 2000, 3000):  # same K values as Table 5
         if k <= len(cum):
             plt.axvline(k, ls="--", c="gray")
+            plt.plot([k], [cum[k - 1]], "o", c="tab:red", ms=4)
             plt.text(k * 0.92, 35, f"K={k}: {cum[k - 1]:.1f}%", rotation=90, fontsize=8, ha="right")
     plt.xlabel("answer vocabulary size K (log)"); plt.ylabel("% of train-pool questions covered")
-    plt.title("Answer coverage vs vocabulary size")
+    plt.title(f"Answer coverage vs vocabulary size\n(train pool, n={n_tr:,} questions)", fontsize=10)
     _save(figs, "F3_answer_coverage_curve.png")
 
     # F4 question types
     qt = sub_tr["question_type"].value_counts(normalize=True).head(20).mul(100)[::-1]
     plt.figure(figsize=(7, 6))
     plt.barh(qt.index, qt.values); plt.xlabel("% of train-pool questions")
-    plt.title("Top-20 question prefixes (overlapping, not exclusive types)")
+    plt.title(f"Top-20 VQA question types (official question_type, mutually exclusive)\ntrain pool, n={n_tr:,} questions", fontsize=10)
     _save(figs, "F4_question_types.png")
 
-    # F5 question length, questions per image, answer length
-    fig, axs = plt.subplots(1, 3, figsize=(14, 3.5))
-    axs[0].hist(both["question"].str.split().str.len(), bins=range(1, 26))
-    axs[0].set_xlabel("words per question"); axs[0].set_title("Question length")
-    axs[1].hist(both.groupby("image_id").size(), bins=range(1, 16))
-    axs[1].set_xlabel("questions per image"); axs[1].set_title("Questions per image")
-    axs[2].hist(both["mc_answer"].str.split().str.len(), bins=range(0, 8))
-    axs[2].set_xlabel("words per majority answer"); axs[2].set_title("Answer length")
-    for a in axs:
-        a.set_ylabel("count")
+    # F5 question length, questions per image, answer length (train pool + test)
+    def int_hist(ax, vals, lo, cap):
+        """Integer histogram, bins centred on integers; values >= cap go in a labelled overflow bin."""
+        vals = np.asarray(vals)
+        ax.hist(np.minimum(vals, cap), bins=np.arange(lo - 0.5, cap + 1.5))
+        ticks = list(range(lo, cap + 1))
+        ax.set_xticks(ticks)
+        ax.set_xticklabels([str(t) for t in ticks[:-1]] + [f"{cap}+"], fontsize=7)
+        ax.set_xlim(lo - 0.5, cap + 0.5)
+        ax.set_ylabel("count")
+        return int((vals >= cap).sum())
+
+    fig, axs = plt.subplots(1, 3, figsize=(15, 3.8))
+    n_q, n_img = len(both), both["image_id"].nunique()
+    int_hist(axs[0], both["question"].str.split().str.len(), 1, 20)
+    axs[0].set_xlabel("words per question (last bin = 20 or more)"); axs[0].set_title("Question length")
+    int_hist(axs[1], both.groupby("image_id").size(), 3, 15)
+    axs[1].set_xlabel("questions per image (last bin = 15 or more)"); axs[1].set_title("Questions per image")
+    int_hist(axs[2], both["mc_answer"].str.split().str.len(), 0, 5)
+    axs[2].set_xlabel("words per majority answer (last bin = 5 or more)"); axs[2].set_title("Answer length")
+    fig.suptitle(f"Text lengths, train pool + test (n={n_q:,} questions, {n_img:,} images)", fontsize=11)
     _save(figs, "F5_lengths.png")
 
     # F6 annotator agreement by answer type
     agree = both.assign(votes=both["answers"].apply(top_votes))
     plt.figure(figsize=(7, 4))
     data = [agree.loc[agree["answer_type"] == t, "votes"] for t in ANSWER_TYPES]
-    plt.hist(data, bins=np.arange(0.5, 11.5, 1), stacked=True, label=list(ANSWER_TYPES))
+    plt.hist(data, bins=np.arange(0.5, 11.5, 1), stacked=True, label=list(ANSWER_TYPES),
+             color=[ANSWER_TYPE_COLORS[t] for t in ANSWER_TYPES])
     plt.axvline(2.5, ls="--", c="k")
     plt.xlabel("votes for the most common answer (of 10)"); plt.ylabel("questions")
-    plt.title("Annotator agreement (right of dashed line: full VQA accuracy reachable)")
+    plt.title(f"Annotator agreement, train pool + test (n={len(agree):,} questions)\n(right of dashed line: full VQA accuracy reachable)", fontsize=10)
     plt.legend()
     _save(figs, "F6_annotator_agreement.png")
 
@@ -617,6 +637,7 @@ def save_figures(sub_tr, sub_te, img_df, clip_df, out: Path, data_dir: Path, see
         fig, axs = plt.subplots(1, 2, figsize=(10, 4))
         axs[0].scatter(okimg["width"], okimg["height"], s=3, alpha=0.3)
         axs[0].set_xlabel("width (px)"); axs[0].set_ylabel("height (px)"); axs[0].set_title("Image sizes")
+        fig.suptitle(f"Image dimensions, train pool + test (n={len(okimg):,} images)", fontsize=11)
         axs[1].hist(okimg["width"] / okimg["height"], bins=40)
         axs[1].set_xlabel("aspect ratio (w/h)"); axs[1].set_title("Aspect ratios")
         _save(figs, "F7_image_sizes.png")
@@ -630,22 +651,29 @@ def save_figures(sub_tr, sub_te, img_df, clip_df, out: Path, data_dir: Path, see
 
         # F8 random example pairs
         _grid(pool.sample(min(9, len(pool)), random_state=rng_state).itertuples(),
-              data_dir, title, figs / "F8_example_pairs.png")
+              data_dir, title, figs / "F8_example_pairs.png",
+              suptitle=f"F8: 9 random pairs from train pool (n={len(pool):,} questions, seed {seed})")
         # F9 low-agreement examples (pair-quality problems)
         low = pool[pool["answers"].apply(top_votes) < 3]
+        # excluded from the display: majority-vote answer list contains an offensive word
+        low = low[low["question_id"] != 183071006]
         _grid(low.sample(min(9, len(low)), random_state=rng_state).itertuples(),
-              data_dir, title, figs / "F9_low_agreement_examples.png")
+              data_dir, title, figs / "F9_low_agreement_examples.png",
+              suptitle=f"F9: 9 random low-agreement pairs (<3 top votes) from train pool "
+                       f"(n={len(low):,} such questions, seed {seed})")
 
     if clip_df is not None and len(clip_df):
         plt.figure(figsize=(6, 4))
         plt.hist(clip_df["clip_sim"], bins=50)
         plt.xlabel("CLIP cosine(image, question + answer)"); plt.ylabel("pairs")
-        plt.title("CLIP pair similarity")
+        plt.title(f"CLIP pair similarity, train pool + test (n={len(clip_df):,} pairs)")
         _save(figs, "F10_clip_similarity.png")
         lowest = clip_df.nsmallest(9, "clip_sim")
         _grid(lowest.itertuples(), data_dir,
               lambda r: f"sim={r.clip_sim:.3f}\nQ: {r.question}\nA: {r.mc_answer}",
-              figs / "F11_lowest_clip_pairs.png")
+              figs / "F11_lowest_clip_pairs.png",
+              suptitle=f"F11: 9 lowest CLIP similarity of {len(clip_df):,} pairs (train pool + test); "
+                       "examples only, not a mismatch rate")
 
 
 # ---------------------------------------------------------------------------
@@ -707,7 +735,7 @@ def proposal_tables(s: dict) -> str:
                  f"{g(im, 'width', 'max')} |")
         L.append(f"| height px (median / min / max) | {g(im, 'height', 'median')} / {g(im, 'height', 'min')} / "
                  f"{g(im, 'height', 'max')} |")
-    L += ["", "## Table 5 - Answer vocabulary options (built on train pool only)", "",
+    L += ["", "## Table 5 - Test-set ceiling (vocab from train pool), descriptive only, not used to choose K", "",
           "| Option | Vocab size K | Train-pool coverage % | Test coverage % | Test oracle VQA acc % |",
           "|---|---|---|---|---|"]
     for k, v in s["answer_vocab_from_train_pool"].items():

@@ -44,7 +44,7 @@
 | width px (median / min / max) | 640.0 / 120.0 / 640.0 |
 | height px (median / min / max) | 480.0 / 130.0 / 640.0 |
 
-## Table 5 - Answer vocabulary options (built on train pool only)
+## Table 5 - Test-set ceiling (vocab from train pool), descriptive only, not used to choose K
 
 | Option | Vocab size K | Train-pool coverage % | Test coverage % | Test oracle VQA acc % |
 |---|---|---|---|---|
