@@ -1,0 +1,10 @@
+# Versions the scripts were tested with (Python 3.13). Loosen to >= if your environment differs.
+numpy==2.5.3
+pandas==3.0.5
+matplotlib==3.11.2
+pillow==12.3.0
+imagehash==4.3.2
+requests==2.34.2
+# optional: only for --tokenizer / --clip
+# torch==2.15.0
+# transformers==5.23.0
