@@ -99,3 +99,5 @@ The Assignment 2 dataset proposal is approved; the M2 draft and M3 final artifac
 ## AI Usage Disclosure
 
 Generative-AI use is disclosed on the landing page, each assignment page, each report, and in the repository log. The models and reported metrics were trained and verified by the group on Kaggle GPUs; AI assistance was limited to scaffolding, documentation, visualization scripts, and consistency checks. See [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md) for per-entry prompts, affected files, verification, and the responsible member.
+
+AI was also used in Assignment 3 M1 (proposal, EDA, split plan, compute estimate and Pages stub): Claude Opus for planning and drafting, Claude Sonnet via Claude Code for code, run under the direction and review of Nguyen Minh Phuc; see entries #10–#15 in [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md).
