@@ -561,7 +561,9 @@ def save_figures(sub_tr, sub_te, img_df, clip_df, out: Path, data_dir: Path, see
     plt.bar([a for a, _ in top], [c for _, c in top],
             color=[colours.get(atype.get(a), "gray") for a, _ in top])
     plt.xticks(rotation=70, ha="right"); plt.ylabel("questions")
-    plt.title("Top-30 majority answers (train pool; blue yes/no, orange number, green other)")
+    plt.title("Top-30 majority answers (train pool)")
+    from matplotlib.patches import Patch
+    plt.legend(handles=[Patch(color=c, label=t) for t, c in colours.items()], title="answer type")
     _save(figs, "F2_top30_answers.png")
 
     # F3 cumulative coverage of questions vs vocabulary size K
@@ -573,7 +575,7 @@ def save_figures(sub_tr, sub_te, img_df, clip_df, out: Path, data_dir: Path, see
     for k in (100, 1000, 3000):
         if k <= len(cum):
             plt.axvline(k, ls="--", c="gray")
-            plt.text(k, 5, f"K={k}: {cum[k - 1]:.1f}%", rotation=90, fontsize=8)
+            plt.text(k * 0.92, 35, f"K={k}: {cum[k - 1]:.1f}%", rotation=90, fontsize=8, ha="right")
     plt.xlabel("answer vocabulary size K (log)"); plt.ylabel("% of train-pool questions covered")
     plt.title("Answer coverage vs vocabulary size")
     _save(figs, "F3_answer_coverage_curve.png")
@@ -582,7 +584,7 @@ def save_figures(sub_tr, sub_te, img_df, clip_df, out: Path, data_dir: Path, see
     qt = sub_tr["question_type"].value_counts(normalize=True).head(20).mul(100)[::-1]
     plt.figure(figsize=(7, 6))
     plt.barh(qt.index, qt.values); plt.xlabel("% of train-pool questions")
-    plt.title("Top-20 question types")
+    plt.title("Top-20 question prefixes (overlapping, not exclusive types)")
     _save(figs, "F4_question_types.png")
 
     # F5 question length, questions per image, answer length
@@ -593,6 +595,8 @@ def save_figures(sub_tr, sub_te, img_df, clip_df, out: Path, data_dir: Path, see
     axs[1].set_xlabel("questions per image"); axs[1].set_title("Questions per image")
     axs[2].hist(both["mc_answer"].str.split().str.len(), bins=range(0, 8))
     axs[2].set_xlabel("words per majority answer"); axs[2].set_title("Answer length")
+    for a in axs:
+        a.set_ylabel("count")
     _save(figs, "F5_lengths.png")
 
     # F6 annotator agreement by answer type
