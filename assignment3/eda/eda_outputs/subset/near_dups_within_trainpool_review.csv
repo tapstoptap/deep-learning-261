@@ -1,0 +1,4 @@
+image_id_a,image_id_b,hamming,verdict,note
+9878,141785,0,real_duplicate,same cake-cutting photo
+167028,224112,4,real_duplicate,same restaurant scene
+406749,412172,2,false_alarm,different photos: violet flowers vs pink flowers

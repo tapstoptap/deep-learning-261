@@ -1,0 +1,13 @@
+data/
+run2.log
+eda_outputs/*
+!eda_outputs/proposal_tables.md
+!eda_outputs/summary.json
+!eda_outputs/figures/
+!eda_outputs/subset/
+eda_outputs/subset/*
+!eda_outputs/subset/*.txt
+!eda_outputs/subset/*_question_ids.csv
+!eda_outputs/subset/near_dups_*.csv
+!eda_outputs/audit_summary.json
+!eda_outputs/audit_sample.csv

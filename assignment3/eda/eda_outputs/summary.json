@@ -1,0 +1,1044 @@
+{
+  "meta": {
+    "run_utc": "2026-11-18T11:58:02+00:00",
+    "args": {
+      "data_dir": "data/vqa_v2",
+      "out_dir": "eda_outputs",
+      "n_train_images": "10000",
+      "n_test_images": "5000",
+      "seed": "261",
+      "images": "True",
+      "no_download": "False",
+      "workers": "16",
+      "phash_max_dist": "4",
+      "audit_n": "100",
+      "tokenizer": "bert-base-uncased",
+      "clip": "openai/clip-vit-base-patch32",
+      "clip_batch": "64"
+    },
+    "versions": {
+      "python": "3.14.4",
+      "platform": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+      "numpy": "2.5.3",
+      "pandas": "3.0.5",
+      "matplotlib": "3.11.2",
+      "PIL": "12.3.0",
+      "imagehash": "4.3.2",
+      "requests": "2.34.2",
+      "transformers": "5.23.0",
+      "torch": "2.15.0+cu132"
+    },
+    "input_files": {
+      "v2_OpenEnded_mscoco_train2014_questions.json": {
+        "bytes": 41957627,
+        "sha256": "cb671e77b52a86fc3722b2a0ffc456c8199240391bfd97eaf2d850448404845c"
+      },
+      "v2_mscoco_train2014_annotations.json": {
+        "bytes": 355516514,
+        "sha256": "770d2d3980e7838d6186082e0ddeddd804014c390ae45a592e996d6baf841d92"
+      },
+      "v2_OpenEnded_mscoco_val2014_questions.json": {
+        "bytes": 20247670,
+        "sha256": "f34d9c9909dea76700d361baddd63dd47b4494945097459b542d9fe840244811"
+      },
+      "v2_mscoco_val2014_annotations.json": {
+        "bytes": 171762489,
+        "sha256": "0564650e712b34c246e4ad142894692bf2e45dee8e9cc6ebb2cedbe85731c4bf"
+      }
+    },
+    "json_headers": {
+      "train2014": {
+        "info": {
+          "description": "This is v2.0 of the VQA dataset.",
+          "url": "http://visualqa.org",
+          "version": "2.0",
+          "year": 2017,
+          "contributor": "VQA Team",
+          "date_created": "2017-04-26 17:07:13"
+        },
+        "data_type": "mscoco",
+        "data_subtype": "train2014",
+        "task_type": "Open-Ended",
+        "license": {
+          "url": "http://creativecommons.org/licenses/by/4.0/",
+          "name": "Creative Commons Attribution 4.0 International License"
+        }
+      },
+      "val2014": {
+        "info": {
+          "description": "This is v2.0 of the VQA dataset.",
+          "url": "http://visualqa.org",
+          "version": "2.0",
+          "year": 2017,
+          "contributor": "VQA Team",
+          "date_created": "2017-04-26 17:00:44"
+        },
+        "data_type": "mscoco",
+        "data_subtype": "val2014",
+        "task_type": "Open-Ended",
+        "license": {
+          "url": "http://creativecommons.org/licenses/by/4.0/",
+          "name": "Creative Commons Attribution 4.0 International License"
+        }
+      }
+    }
+  },
+  "full_train2014": {
+    "questions_with_annotations": 443757,
+    "questions_missing_annotation": 0,
+    "annotations_missing_question": 0,
+    "question_annotation_image_id_mismatch": 0,
+    "images": 82783,
+    "questions_per_image": {
+      "n": 82783,
+      "mean": 5.36,
+      "std": 5.249,
+      "median": 4.0,
+      "p95": 13.0,
+      "min": 3.0,
+      "max": 275.0
+    },
+    "text_hygiene": {
+      "empty_questions": 0,
+      "questions_under_3_words": 17,
+      "questions_not_ending_with_?": 0,
+      "questions_with_non_ascii": 0,
+      "empty_majority_answers": 66,
+      "questions_without_10_answers": 0
+    },
+    "question_length_words": {
+      "n": 443757,
+      "mean": 6.202,
+      "std": 1.934,
+      "median": 6.0,
+      "p95": 10.0,
+      "min": 2.0,
+      "max": 22.0
+    },
+    "answer_type_pct": {
+      "other": 49.41,
+      "yes/no": 37.61,
+      "number": 12.98
+    },
+    "question_types": {
+      "count": 65,
+      "top15_pct": {
+        "how many": 9.54,
+        "is the": 7.87,
+        "what": 7.8,
+        "what color is the": 6.3,
+        "what is the": 5.52,
+        "none of the above": 3.82,
+        "is this": 3.71,
+        "is this a": 3.61,
+        "what is": 3.06,
+        "what kind of": 2.52,
+        "are the": 2.41,
+        "is there a": 2.25,
+        "what type of": 1.79,
+        "is it": 1.66,
+        "what are the": 1.63
+      }
+    },
+    "majority_answer_length_words": {
+      "n": 443757,
+      "mean": 1.101,
+      "std": 0.404,
+      "median": 1.0,
+      "p95": 2.0,
+      "min": 0.0,
+      "max": 18.0
+    },
+    "pct_multi_word_majority_answers": 7.42,
+    "answer_distribution": {
+      "unique_majority_answers": 22392,
+      "unique_answers_incl_all_10": 157313,
+      "top1_answer_share_pct": 19.15,
+      "top10_answers_share_pct": 51.82,
+      "normalized_entropy": 0.5155,
+      "answers_seen_once": 13686,
+      "coverage_of_questions_by_topK_pct": {
+        "top100": 69.56,
+        "top500": 82.91,
+        "top1000": 87.5,
+        "top2000": 91.25,
+        "top3000": 93.1
+      }
+    },
+    "annotator_agreement": {
+      "mean_votes_for_top_answer": 7.39,
+      "pct_top_answer_>=3_votes": 93.68,
+      "pct_all_10_agree": 33.39,
+      "pct_no_answer_>=2_votes": 1.12,
+      "mean_unique_answers": 2.926,
+      "by_answer_type": {
+        "number": {
+          "mean_votes_for_top_answer": 7.405,
+          "pct_top_answer_>=3_votes": 93.45
+        },
+        "other": {
+          "mean_votes_for_top_answer": 6.201,
+          "pct_top_answer_>=3_votes": 88.93
+        },
+        "yes/no": {
+          "mean_votes_for_top_answer": 8.947,
+          "pct_top_answer_>=3_votes": 100.0
+        }
+      }
+    },
+    "answer_confidence_pct": {
+      "yes": 81.08,
+      "maybe": 16.41,
+      "no": 2.5
+    },
+    "leakage_in_text": {
+      "pct_majority_answer_in_question": 2.63,
+      "pct_choice_questions_with_or": 2.57
+    },
+    "duplicates": {
+      "duplicate_question_ids": 0,
+      "duplicate_image_question_pairs": 63
+    },
+    "top20_answers": [
+      [
+        "yes",
+        84978
+      ],
+      [
+        "no",
+        82516
+      ],
+      [
+        "1",
+        12541
+      ],
+      [
+        "2",
+        12215
+      ],
+      [
+        "white",
+        8916
+      ],
+      [
+        "0",
+        6540
+      ],
+      [
+        "3",
+        6536
+      ],
+      [
+        "blue",
+        5455
+      ],
+      [
+        "red",
+        5201
+      ],
+      [
+        "black",
+        5066
+      ],
+      [
+        "4",
+        4118
+      ],
+      [
+        "brown",
+        3814
+      ],
+      [
+        "green",
+        3750
+      ],
+      [
+        "yellow",
+        2792
+      ],
+      [
+        "5",
+        2367
+      ],
+      [
+        "gray",
+        2113
+      ],
+      [
+        "nothing",
+        1814
+      ],
+      [
+        "right",
+        1766
+      ],
+      [
+        "frisbee",
+        1641
+      ],
+      [
+        "baseball",
+        1597
+      ]
+    ]
+  },
+  "full_val2014": {
+    "questions_with_annotations": 214354,
+    "questions_missing_annotation": 0,
+    "annotations_missing_question": 0,
+    "question_annotation_image_id_mismatch": 0,
+    "images": 40504,
+    "questions_per_image": {
+      "n": 40504,
+      "mean": 5.292,
+      "std": 4.765,
+      "median": 4.0,
+      "p95": 13.0,
+      "min": 3.0,
+      "max": 132.0
+    },
+    "text_hygiene": {
+      "empty_questions": 0,
+      "questions_under_3_words": 8,
+      "questions_not_ending_with_?": 0,
+      "questions_with_non_ascii": 0,
+      "empty_majority_answers": 28,
+      "questions_without_10_answers": 0
+    },
+    "question_length_words": {
+      "n": 214354,
+      "mean": 6.185,
+      "std": 1.936,
+      "median": 6.0,
+      "p95": 10.0,
+      "min": 2.0,
+      "max": 23.0
+    },
+    "answer_type_pct": {
+      "other": 49.3,
+      "yes/no": 37.57,
+      "number": 13.13
+    },
+    "question_types": {
+      "count": 65,
+      "top15_pct": {
+        "how many": 9.55,
+        "is the": 8.05,
+        "what": 7.42,
+        "what color is the": 6.56,
+        "what is the": 5.3,
+        "none of the above": 3.99,
+        "is this": 3.66,
+        "is this a": 3.5,
+        "what is": 2.95,
+        "what kind of": 2.72,
+        "are the": 2.46,
+        "is there a": 2.18,
+        "what type of": 1.88,
+        "where is the": 1.73,
+        "is it": 1.66
+      }
+    },
+    "majority_answer_length_words": {
+      "n": 214354,
+      "mean": 1.104,
+      "std": 0.413,
+      "median": 1.0,
+      "p95": 2.0,
+      "min": 0.0,
+      "max": 12.0
+    },
+    "pct_multi_word_majority_answers": 7.59,
+    "answer_distribution": {
+      "unique_majority_answers": 13942,
+      "unique_answers_incl_all_10": 91384,
+      "top1_answer_share_pct": 19.0,
+      "top10_answers_share_pct": 51.67,
+      "normalized_entropy": 0.5381,
+      "answers_seen_once": 8399,
+      "coverage_of_questions_by_topK_pct": {
+        "top100": 69.43,
+        "top500": 82.73,
+        "top1000": 87.44,
+        "top2000": 91.41,
+        "top3000": 93.38
+      }
+    },
+    "annotator_agreement": {
+      "mean_votes_for_top_answer": 7.356,
+      "pct_top_answer_>=3_votes": 93.47,
+      "pct_all_10_agree": 32.8,
+      "pct_no_answer_>=2_votes": 1.18,
+      "mean_unique_answers": 2.956,
+      "by_answer_type": {
+        "number": {
+          "mean_votes_for_top_answer": 7.339,
+          "pct_top_answer_>=3_votes": 93.03
+        },
+        "other": {
+          "mean_votes_for_top_answer": 6.186,
+          "pct_top_answer_>=3_votes": 88.6
+        },
+        "yes/no": {
+          "mean_votes_for_top_answer": 8.898,
+          "pct_top_answer_>=3_votes": 100.0
+        }
+      }
+    },
+    "answer_confidence_pct": {
+      "yes": 80.99,
+      "maybe": 16.53,
+      "no": 2.47
+    },
+    "leakage_in_text": {
+      "pct_majority_answer_in_question": 2.71,
+      "pct_choice_questions_with_or": 2.64
+    },
+    "duplicates": {
+      "duplicate_question_ids": 0,
+      "duplicate_image_question_pairs": 33
+    },
+    "top20_answers": [
+      [
+        "yes",
+        40728
+      ],
+      [
+        "no",
+        40082
+      ],
+      [
+        "1",
+        6093
+      ],
+      [
+        "2",
+        5745
+      ],
+      [
+        "white",
+        4311
+      ],
+      [
+        "3",
+        3073
+      ],
+      [
+        "0",
+        2990
+      ],
+      [
+        "blue",
+        2733
+      ],
+      [
+        "black",
+        2512
+      ],
+      [
+        "red",
+        2483
+      ],
+      [
+        "green",
+        1986
+      ],
+      [
+        "4",
+        1931
+      ],
+      [
+        "brown",
+        1927
+      ],
+      [
+        "yellow",
+        1351
+      ],
+      [
+        "5",
+        1117
+      ],
+      [
+        "gray",
+        1100
+      ],
+      [
+        "right",
+        839
+      ],
+      [
+        "orange",
+        786
+      ],
+      [
+        "6",
+        777
+      ],
+      [
+        "tennis",
+        768
+      ]
+    ]
+  },
+  "full_image_overlap_train_val": 0,
+  "subset_train_pool": {
+    "questions_with_annotations": 53522,
+    "questions_missing_annotation": 0,
+    "annotations_missing_question": 0,
+    "question_annotation_image_id_mismatch": 0,
+    "images": 10000,
+    "questions_per_image": {
+      "n": 10000,
+      "mean": 5.352,
+      "std": 5.395,
+      "median": 4.0,
+      "p95": 13.0,
+      "min": 3.0,
+      "max": 176.0
+    },
+    "text_hygiene": {
+      "empty_questions": 0,
+      "questions_under_3_words": 0,
+      "questions_not_ending_with_?": 0,
+      "questions_with_non_ascii": 0,
+      "empty_majority_answers": 6,
+      "questions_without_10_answers": 0
+    },
+    "question_length_words": {
+      "n": 53522,
+      "mean": 6.188,
+      "std": 1.934,
+      "median": 6.0,
+      "p95": 10.0,
+      "min": 3.0,
+      "max": 20.0
+    },
+    "answer_type_pct": {
+      "other": 49.36,
+      "yes/no": 37.54,
+      "number": 13.1
+    },
+    "question_types": {
+      "count": 65,
+      "top15_pct": {
+        "how many": 9.6,
+        "what": 7.83,
+        "is the": 7.82,
+        "what color is the": 6.3,
+        "what is the": 5.53,
+        "none of the above": 3.93,
+        "is this a": 3.71,
+        "is this": 3.7,
+        "what is": 2.97,
+        "what kind of": 2.43,
+        "are the": 2.36,
+        "is there a": 2.23,
+        "what type of": 1.78,
+        "what are the": 1.74,
+        "is it": 1.57
+      }
+    },
+    "majority_answer_length_words": {
+      "n": 53522,
+      "mean": 1.101,
+      "std": 0.408,
+      "median": 1.0,
+      "p95": 2.0,
+      "min": 0.0,
+      "max": 11.0
+    },
+    "pct_multi_word_majority_answers": 7.46,
+    "answer_distribution": {
+      "unique_majority_answers": 5680,
+      "unique_answers_incl_all_10": 32394,
+      "top1_answer_share_pct": 19.05,
+      "top10_answers_share_pct": 51.77,
+      "normalized_entropy": 0.58,
+      "answers_seen_once": 3561,
+      "coverage_of_questions_by_topK_pct": {
+        "top100": 69.8,
+        "top500": 83.37,
+        "top1000": 88.37,
+        "top2000": 92.9,
+        "top3000": 94.99
+      }
+    },
+    "annotator_agreement": {
+      "mean_votes_for_top_answer": 7.392,
+      "pct_top_answer_>=3_votes": 93.82,
+      "pct_all_10_agree": 33.35,
+      "pct_no_answer_>=2_votes": 1.11,
+      "mean_unique_answers": 2.922,
+      "by_answer_type": {
+        "number": {
+          "mean_votes_for_top_answer": 7.458,
+          "pct_top_answer_>=3_votes": 93.77
+        },
+        "other": {
+          "mean_votes_for_top_answer": 6.192,
+          "pct_top_answer_>=3_votes": 89.13
+        },
+        "yes/no": {
+          "mean_votes_for_top_answer": 8.947,
+          "pct_top_answer_>=3_votes": 100.0
+        }
+      }
+    },
+    "answer_confidence_pct": {
+      "yes": 81.11,
+      "maybe": 16.41,
+      "no": 2.48
+    },
+    "leakage_in_text": {
+      "pct_majority_answer_in_question": 2.59,
+      "pct_choice_questions_with_or": 2.55
+    },
+    "duplicates": {
+      "duplicate_question_ids": 0,
+      "duplicate_image_question_pairs": 6
+    },
+    "top20_answers": [
+      [
+        "yes",
+        10196
+      ],
+      [
+        "no",
+        9971
+      ],
+      [
+        "1",
+        1554
+      ],
+      [
+        "2",
+        1445
+      ],
+      [
+        "white",
+        1047
+      ],
+      [
+        "0",
+        803
+      ],
+      [
+        "3",
+        781
+      ],
+      [
+        "blue",
+        720
+      ],
+      [
+        "black",
+        612
+      ],
+      [
+        "red",
+        577
+      ],
+      [
+        "4",
+        498
+      ],
+      [
+        "green",
+        463
+      ],
+      [
+        "brown",
+        437
+      ],
+      [
+        "yellow",
+        325
+      ],
+      [
+        "5",
+        280
+      ],
+      [
+        "gray",
+        246
+      ],
+      [
+        "right",
+        234
+      ],
+      [
+        "baseball",
+        227
+      ],
+      [
+        "nothing",
+        220
+      ],
+      [
+        "frisbee",
+        207
+      ]
+    ]
+  },
+  "subset_test": {
+    "questions_with_annotations": 26221,
+    "questions_missing_annotation": 0,
+    "annotations_missing_question": 0,
+    "question_annotation_image_id_mismatch": 0,
+    "images": 5000,
+    "questions_per_image": {
+      "n": 5000,
+      "mean": 5.244,
+      "std": 4.545,
+      "median": 4.0,
+      "p95": 12.0,
+      "min": 3.0,
+      "max": 88.0
+    },
+    "text_hygiene": {
+      "empty_questions": 0,
+      "questions_under_3_words": 1,
+      "questions_not_ending_with_?": 0,
+      "questions_with_non_ascii": 0,
+      "empty_majority_answers": 6,
+      "questions_without_10_answers": 0
+    },
+    "question_length_words": {
+      "n": 26221,
+      "mean": 6.199,
+      "std": 1.953,
+      "median": 6.0,
+      "p95": 10.0,
+      "min": 2.0,
+      "max": 21.0
+    },
+    "answer_type_pct": {
+      "other": 49.39,
+      "yes/no": 37.42,
+      "number": 13.19
+    },
+    "question_types": {
+      "count": 65,
+      "top15_pct": {
+        "how many": 9.58,
+        "is the": 7.83,
+        "what": 7.55,
+        "what color is the": 6.58,
+        "what is the": 5.27,
+        "none of the above": 3.76,
+        "is this": 3.58,
+        "is this a": 3.45,
+        "what is": 2.89,
+        "what kind of": 2.88,
+        "are the": 2.59,
+        "is there a": 2.21,
+        "what type of": 1.83,
+        "is it": 1.73,
+        "where is the": 1.7
+      }
+    },
+    "majority_answer_length_words": {
+      "n": 26221,
+      "mean": 1.103,
+      "std": 0.41,
+      "median": 1.0,
+      "p95": 2.0,
+      "min": 0.0,
+      "max": 11.0
+    },
+    "pct_multi_word_majority_answers": 7.56,
+    "answer_distribution": {
+      "unique_majority_answers": 3608,
+      "unique_answers_incl_all_10": 19239,
+      "top1_answer_share_pct": 19.08,
+      "top10_answers_share_pct": 51.82,
+      "normalized_entropy": 0.6046,
+      "answers_seen_once": 2280,
+      "coverage_of_questions_by_topK_pct": {
+        "top100": 69.66,
+        "top500": 83.51,
+        "top1000": 88.8,
+        "top2000": 93.87,
+        "top3000": 97.68
+      }
+    },
+    "annotator_agreement": {
+      "mean_votes_for_top_answer": 7.365,
+      "pct_top_answer_>=3_votes": 93.33,
+      "pct_all_10_agree": 33.2,
+      "pct_no_answer_>=2_votes": 1.15,
+      "mean_unique_answers": 2.956,
+      "by_answer_type": {
+        "number": {
+          "mean_votes_for_top_answer": 7.381,
+          "pct_top_answer_>=3_votes": 92.51
+        },
+        "other": {
+          "mean_votes_for_top_answer": 6.182,
+          "pct_top_answer_>=3_votes": 88.5
+        },
+        "yes/no": {
+          "mean_votes_for_top_answer": 8.92,
+          "pct_top_answer_>=3_votes": 100.0
+        }
+      }
+    },
+    "answer_confidence_pct": {
+      "yes": 81.07,
+      "maybe": 16.45,
+      "no": 2.48
+    },
+    "leakage_in_text": {
+      "pct_majority_answer_in_question": 2.82,
+      "pct_choice_questions_with_or": 2.73
+    },
+    "duplicates": {
+      "duplicate_question_ids": 0,
+      "duplicate_image_question_pairs": 6
+    },
+    "top20_answers": [
+      [
+        "yes",
+        5003
+      ],
+      [
+        "no",
+        4840
+      ],
+      [
+        "1",
+        766
+      ],
+      [
+        "2",
+        688
+      ],
+      [
+        "white",
+        543
+      ],
+      [
+        "0",
+        398
+      ],
+      [
+        "3",
+        359
+      ],
+      [
+        "blue",
+        336
+      ],
+      [
+        "red",
+        332
+      ],
+      [
+        "black",
+        324
+      ],
+      [
+        "4",
+        256
+      ],
+      [
+        "green",
+        237
+      ],
+      [
+        "brown",
+        224
+      ],
+      [
+        "yellow",
+        171
+      ],
+      [
+        "gray",
+        139
+      ],
+      [
+        "5",
+        125
+      ],
+      [
+        "right",
+        108
+      ],
+      [
+        "left",
+        105
+      ],
+      [
+        "6",
+        98
+      ],
+      [
+        "orange",
+        96
+      ]
+    ]
+  },
+  "subset_representativeness": {
+    "train_pool_vs_full_train": {
+      "tvd_answer_type": 0.0012,
+      "tvd_question_type": 0.0124,
+      "tvd_top100_answers": 0.0112,
+      "mean_q_len_full_vs_subset": [
+        6.202,
+        6.188
+      ]
+    },
+    "test_vs_full_val": {
+      "tvd_answer_type": 0.0016,
+      "tvd_question_type": 0.0159,
+      "tvd_top100_answers": 0.0133,
+      "mean_q_len_full_vs_subset": [
+        6.185,
+        6.199
+      ]
+    }
+  },
+  "answer_vocab_from_train_pool": {
+    "min_count_3": {
+      "vocab_size": 1393,
+      "train_pool_coverage_pct": 90.63,
+      "test_coverage_pct": 87.75,
+      "test_oracle_vqa_accuracy": 89.38
+    },
+    "min_count_5": {
+      "vocab_size": 830,
+      "train_pool_coverage_pct": 87.1,
+      "test_coverage_pct": 85.23,
+      "test_oracle_vqa_accuracy": 87.51
+    },
+    "min_count_9": {
+      "vocab_size": 476,
+      "train_pool_coverage_pct": 83.01,
+      "test_coverage_pct": 81.71,
+      "test_oracle_vqa_accuracy": 84.69
+    },
+    "top_500": {
+      "vocab_size": 500,
+      "train_pool_coverage_pct": 83.37,
+      "test_coverage_pct": 82.0,
+      "test_oracle_vqa_accuracy": 84.97
+    },
+    "top_1000": {
+      "vocab_size": 1000,
+      "train_pool_coverage_pct": 88.37,
+      "test_coverage_pct": 86.19,
+      "test_oracle_vqa_accuracy": 88.23
+    },
+    "top_2000": {
+      "vocab_size": 2000,
+      "train_pool_coverage_pct": 92.9,
+      "test_coverage_pct": 89.17,
+      "test_oracle_vqa_accuracy": 90.35
+    },
+    "top_3000": {
+      "vocab_size": 3000,
+      "train_pool_coverage_pct": 94.99,
+      "test_coverage_pct": 90.03,
+      "test_oracle_vqa_accuracy": 90.89
+    },
+    "_note": "oracle = best VQA accuracy a perfect classifier restricted to this vocabulary could reach on the test subset (upper bound)."
+  },
+  "question_text_overlap": {
+    "pct_test_questions_whose_text_appears_in_train_pool": 34.23,
+    "pct_test_question_answer_pairs_seen_in_train_pool": 19.54,
+    "_note": "Same question text on different images is normal in VQA (e.g. 'What color is the bus?'); images, not question strings, are the leakage unit."
+  },
+  "language_prior": {
+    "global_mode_answer": "yes",
+    "acc_always_global_mode": 23.92,
+    "acc_mode_per_question_type": 31.8,
+    "acc_mode_per_question_type_by_answer_type": {
+      "other": 9.19,
+      "yes/no": 63.47,
+      "number": 26.64
+    },
+    "_note": "No image and no learned model: a reference floor, not a baseline result."
+  },
+  "token_lengths": {
+    "tokenizer": "bert-base-uncased",
+    "n": 79743,
+    "mean": 9.445,
+    "std": 2.109,
+    "median": 9.0,
+    "p95": 13.0,
+    "min": 5.0,
+    "max": 27.0,
+    "pct_over_16": 0.88,
+    "pct_over_24": 0.01,
+    "pct_over_32": 0.0
+  },
+  "subset_images": {
+    "images_expected": 15000,
+    "images_missing": 0,
+    "images_corrupt": 0,
+    "questions_whose_image_is_missing_or_corrupt": 0,
+    "missing_modality_rate_pct": 0.0,
+    "width": {
+      "n": 15000,
+      "mean": 578.354,
+      "std": 91.401,
+      "median": 640.0,
+      "p95": 640.0,
+      "min": 120.0,
+      "max": 640.0
+    },
+    "height": {
+      "n": 15000,
+      "mean": 483.22,
+      "std": 96.903,
+      "median": 480.0,
+      "p95": 640.0,
+      "min": 130.0,
+      "max": 640.0
+    },
+    "aspect_ratio": {
+      "n": 15000,
+      "mean": 1.258,
+      "std": 0.348,
+      "median": 1.3333333333333333,
+      "p95": 1.641025641025641,
+      "min": 0.390625,
+      "max": 4.23841059602649
+    },
+    "file_kb": {
+      "n": 15000,
+      "mean": 159.393,
+      "std": 63.969,
+      "median": 152.3,
+      "p95": 275.2,
+      "min": 8.3,
+      "max": 529.9
+    },
+    "total_mb": 2334.9,
+    "formats": {
+      "JPEG": 15000
+    },
+    "modes": {
+      "RGB": 14981,
+      "L": 19
+    },
+    "images_smaller_than_224px_side": 53,
+    "within_train_pool_near_duplicate_pairs": 3,
+    "within_test_near_duplicate_pairs": 0,
+    "cross_split_near_duplicate_pairs": 0,
+    "phash_max_hamming": 4
+  },
+  "clip_pair_similarity": {
+    "model": "openai/clip-vit-base-patch32",
+    "n": 79743,
+    "mean": 0.241,
+    "std": 0.036,
+    "median": 0.2417052835226059,
+    "p95": 0.2998597204685211,
+    "min": 0.10201852768659592,
+    "max": 0.42183226346969604,
+    "_note": "text = question + majority answer; low values flag pairs to inspect, not proof of mismatch (abstract questions also score low)."
+  }
+}
