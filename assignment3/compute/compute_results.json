@@ -1,0 +1,68 @@
+{
+  "env": {
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "vram_mib": 5772,
+    "cpu": "12th Gen Intel i5-12450HX (12 threads)",
+    "torch": "2.15.0+cu132",
+    "cuda": "13.2",
+    "torchvision": "0.29.2+cu132",
+    "transformers": "5.23.0",
+    "python": "3.14.4",
+    "cudnn": 92600
+  },
+  "resnet": {
+    "n_images": 512,
+    "batch": 64,
+    "precision": "fp16 autocast",
+    "gpu_only_img_per_s": 713.5,
+    "gpu_incl_d2h_img_per_s_note": "timing includes copy to host",
+    "decode_preprocess_img_per_s_8workers": 892.0,
+    "pooled_fp16_bytes_per_img": 4096,
+    "grid_fp16_bytes_per_img": 200704,
+    "end_to_end_img_per_s_est": 713.5,
+    "extrap_15k_s_gpu_only": 21,
+    "extrap_15k_s_bottleneck": 21,
+    "pooled_15k_GB": 0.061,
+    "grid_15k_GB": 3.01
+  },
+  "bert": {
+    "n_questions": 2048,
+    "batch": 256,
+    "max_len": 32,
+    "precision": "fp16 autocast",
+    "questions_per_s": 2575.6,
+    "tokenize_questions_per_s": 57140,
+    "extrap_79731_s": 31,
+    "cls_fp16_bytes_per_q": 1536,
+    "cls_79731_MB": 122.5,
+    "tokens_fp16_bytes_per_q": 49152,
+    "tokens_79731_GB": 3.92
+  },
+  "mlp_head": {
+    "params_M": 3.67,
+    "batch": 256,
+    "s_per_epoch": 0.33,
+    "epochs_timed": 3
+  },
+  "glimpse_head": {
+    "params_M": 6.56,
+    "batch": 256,
+    "s_per_epoch_compute_only": 2.75,
+    "h2d_s_per_batch": 0.0061,
+    "h2d_s_per_epoch": 1.15,
+    "s_per_epoch_with_pinned_h2d": 3.91,
+    "train_grid_fp16_GB": 9.68,
+    "note": "grid data cycled from 8,192 GPU-resident samples; full train grid needs 9.7 GB"
+  },
+  "finetune_top2": {
+    "batch": 64,
+    "max_len": 32,
+    "precision": "bf16 autocast, fp32 master weights",
+    "s_per_step_median": 0.0379,
+    "s_per_step_mean": 0.0382,
+    "peak_vram_alloc_MiB": 1172,
+    "peak_vram_reserved_MiB": 1238,
+    "steps_per_epoch": 754,
+    "s_per_epoch": 28.6
+  }
+}

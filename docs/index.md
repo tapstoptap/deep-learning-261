@@ -83,7 +83,8 @@ The Assignment 2 dataset proposal is approved; the M2 draft and M3 final artifac
 
 # Assignment 3
 
-**Status:** proposal stage (18 Nov 2026).
+**Task:** visual question answering on a VQA v2 subset.  
+**Status:** M1 proposal submitted (18 Nov 2026); M2 draft due 25 Nov, M3 final due 02 Dec.
 
 [Open the Assignment 3 page](assignment3)
 
