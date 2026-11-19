@@ -64,4 +64,4 @@ Coming (M3).
 - YouTube presentation video: coming
 
 ## AI Usage Disclosure (Assignment 3)
-AI assistance (Claude) was used for planning, code generation and review. See [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md) for the full log.
+AI assistance (Claude) was used for planning, code generation and review. See [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md) for the full log (entries #10–#15).
