@@ -1,0 +1,69 @@
+university: Ho Chi Minh City University of Technology – VNU-HCM
+faculty: Faculty of Computer Science and Engineering
+course: Deep Learning and Its Applications
+code: CO3133
+semester: Semester-261
+instructor: Lê Thành Sách
+group: Group 99 — PTQ (choco)
+repo: https://github.com/tapstoptap/deep-learning-261
+ai_log: https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md
+members:
+  - name: Nguyen Minh Phuc
+    id: "2453005"
+    role: Repository skeleton and Food-101 reference check.
+    github: tapstoptap
+  - name: Nguyen Thanh The
+    id: "2453191"
+    role: Assignment 2 proposal, implementation, experiments, report and figures.
+    github: Themenli1
+  - name: Nguyen Minh Quang
+    id: "2453052"
+    role: Assignment 1 sole author.
+    github: quangnguyencomeng
+assignments:
+  - n: 1
+    url: /assignment1
+    title: Foundations of Deep Learning Pipelines and Architectures
+    task: Fashion-MNIST classification with Linear, MLP, CNN, GRU and Transformer models under one shared protocol.
+    state: done
+    status: Complete
+    milestones:
+      - { done: true, text: "Final report and presentation published" }
+    links:
+      - { text: "Report (PDF)", href: "https://github.com/tapstoptap/deep-learning-261/blob/main/assignment1/report/DL_A1_report.pdf" }
+      - { text: "Presentation", href: "https://youtu.be/nHcVq0U0Zc4" }
+  - n: 2
+    url: /assignment2
+    title: Deep Learning on Large-Scale Data and Specialized Tasks
+    task: Food-101 image classification (101 classes) with a scratch CNN and frozen vs fully fine-tuned ResNet-50; best test accuracy 86.17%.
+    state: done
+    status: Complete
+    milestones:
+      - { done: true, text: "M1 Proposal approved" }
+      - { done: true, text: "M2 Draft submitted" }
+      - { done: true, text: "M3 Final complete" }
+    links:
+      - { text: "Report (PDF)", href: "https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Report.pdf" }
+      - { text: "Slides", href: "https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Slides.pdf" }
+      - { text: "Presentation", href: "https://youtu.be/xfPd0ZnpQYE" }
+      - { text: "Code", href: "https://github.com/tapstoptap/deep-learning-261/tree/main/assignment2" }
+  - n: 3
+    url: /assignment3
+    title: Multimodal Deep Learning — VQA on a VQA v2 subset
+    task: Visual question answering (image + question → answer) on a VQA v2 subset.
+    state: progress
+    status: In progress
+    milestones:
+      - { done: true, text: "M1 Proposal — submitted 18 Nov 2026" }
+      - { done: false, text: "M2 Draft — due 25 Nov 2026" }
+      - { done: false, text: "M3 Final — due 02 Dec 2026" }
+    links:
+      - { text: "Proposal", href: "https://github.com/tapstoptap/deep-learning-261/blob/main/assignment3/PROPOSAL.md" }
+      - { text: "Code", href: "https://github.com/tapstoptap/deep-learning-261/tree/main/assignment3" }
+ai:
+  - n: 1
+    text: "Planning, configuration structure, experiment workflow, log checking, result analysis and report organisation (log entries #1–4, #8)."
+  - n: 2
+    text: "Architecture and pipeline scaffolding, log curation, script-based plots, report drafting and a pre-submission consistency audit (entries #5–7, #9)."
+  - n: 3
+    text: "Task and dataset comparison, EDA, split and experiment planning, compute measurement and proposal drafting with Claude (entries #10–15)."
