@@ -1,0 +1,71 @@
+university: Ho Chi Minh City University of Technology – VNU-HCM
+faculty: Faculty of Computer Science and Engineering
+course: Deep Learning and Its Applications
+code: CO3133
+semester: Semester-261
+instructor: Lê Thành Sách
+group: Group 99 — PTQ (choco)
+repo: https://github.com/tapstoptap/deep-learning-261
+ai_log: https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md
+members:
+  - name: Nguyen Minh Phuc
+    id: "2453005"
+    role: "Team leader; repository skeleton and Food-101 reference check (A2); A3 lead — workflow orchestration and review"
+    github: tapstoptap
+  - name: Nguyen Thanh The
+    id: "2453191"
+    role: Assignment 2 proposal, implementation, experiments, report and figures.
+    github: Themenli1
+  - name: Nguyen Minh Quang
+    id: "2453052"
+    role: Assignment 1 sole author.
+    github: quangnguyencomeng
+assignments:
+  - n: 1
+    url: /assignment1
+    title: Foundations of Deep Learning Pipelines and Architectures
+    task: Fashion-MNIST classification with Linear, MLP, CNN, GRU and Transformer models under one shared protocol.
+    state: done
+    status: Complete
+    milestones:
+      - { done: true, text: "M1 Draft — 23 Sep 2026 · Submitted" }
+      - { done: true, text: "M2 Final — 28 Oct 2026 · Submitted" }
+    links:
+      - { text: "Report (PDF)", href: "https://github.com/tapstoptap/deep-learning-261/blob/main/assignment1/report/DL_A1_report.pdf" }
+      - { text: "Presentation", href: "https://youtu.be/nHcVq0U0Zc4" }
+  - n: 2
+    url: /assignment2
+    title: Deep Learning on Large-Scale Data and Specialized Tasks
+    task: Food-101 image classification (101 classes) with a scratch CNN and frozen vs fully fine-tuned ResNet-50; best test accuracy 86.17%.
+    state: done
+    status: Complete
+    milestones:
+      - { done: true, text: "M1 Proposal — 07 Oct 2026 · Submitted" }
+      - { done: true, text: "M2 Draft — 28 Oct 2026 · Submitted" }
+      - { done: true, text: "M3 Final — 11 Nov 2026 · Submitted" }
+    links:
+      - { text: "Report (PDF)", href: "https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Report.pdf" }
+      - { text: "Slides", href: "https://github.com/tapstoptap/deep-learning-261/blob/main/assignment2/report/CHOCO_A2_Slides.pdf" }
+      - { text: "Presentation", href: "https://youtu.be/xfPd0ZnpQYE" }
+      - { text: "Code", href: "https://github.com/tapstoptap/deep-learning-261/tree/main/assignment2" }
+  - n: 3
+    url: /assignment3
+    title: Multimodal Deep Learning — VQA on a VQA v2 subset
+    task: Visual question answering (image + question → answer) on a VQA v2 subset.
+    state: progress
+    status: In progress
+    milestones:
+      - { done: true, text: "M1 Proposal — 18 Nov 2026 · Submitted" }
+      - { done: false, text: "M2 Draft — 25 Nov 2026 · Coming" }
+      - { done: false, text: "M3 Final — 02 Dec 2026 · Coming" }
+    links:
+      - { text: "Proposal", href: "https://github.com/tapstoptap/deep-learning-261/blob/main/assignment3/PROPOSAL.md" }
+      - { text: "Code", href: "https://github.com/tapstoptap/deep-learning-261/tree/main/assignment3" }
+ai_intro: "AI tools were used under the group's direction and disclosed per entry. For A1 and A2, models were trained and evaluated by the group on Kaggle and Colab GPUs. For A3 (in progress), the A3 lead orchestrated the workflow and reviewed every output while Claude drafted plans and documents and wrote and ran code; compute was measured on the group's own laptop. The responsible member verified every output before it was committed."
+ai:
+  - n: 1
+    text: "Planning, configuration structure, experiment workflow, log checking, result analysis and report organisation (log entries #1–4, #8)."
+  - n: 2
+    text: "Architecture and pipeline scaffolding, log curation, script-based plots, report drafting and a pre-submission consistency audit (entries #5–7, #9)."
+  - n: 3
+    text: "M1 proposal, EDA, split plan, compute estimate and Pages stub: Claude Opus for planning and drafting, Claude Sonnet via Claude Code for code, under the direction and review of Nguyen Minh Phuc (entries #10–15)."
