@@ -259,5 +259,5 @@ course project, but they did not contribute to Assignment 1.
 
 AI assistance was used for planning, implementation support, result checking,
 analysis, and report organization. The AI usage table and verification details
-are recorded in [AI_USAGE.md](../AI_USAGE.md). The final code, experiments,
+are recorded in [AI_USAGE.md](https://github.com/tapstoptap/deep-learning-261/blob/main/AI_USAGE.md). The final code, experiments,
 metrics, interpretations, report, and presentation were checked by the student.

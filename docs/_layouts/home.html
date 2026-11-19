@@ -47,7 +47,7 @@ layout: default
   <section aria-labelledby="ai-usage">
     <h2 id="ai-usage">AI Usage Disclosure</h2>
     <div class="card wide">
-      <p>Generative AI was used across Assignments 1–3 as an assistant. The models and reported metrics were trained and verified by the group on Kaggle and Colab GPUs; AI assistance was limited to the tasks below, and every output was checked by the responsible member.</p>
+      <p>{{ d.ai_intro }}</p>
       <ul>
         {% for e in d.ai %}<li><strong>Assignment {{ e.n }}:</strong> {{ e.text }}</li>{% endfor %}
       </ul>
