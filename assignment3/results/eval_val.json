@@ -1,0 +1,275 @@
+{
+ "split": "val",
+ "n_questions": 5265,
+ "oracle_vqa_acc": 88.54131698608398,
+ "train_coverage_pct": 86.58513835630636,
+ "env": {
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "torch": "2.15.0+cu132",
+  "cuda": "13.2",
+  "python": "3.14.4"
+ },
+ "models": {
+  "prior": {
+   "seeds": {
+    "-": {
+     "vqa_acc": 31.876543164253235,
+     "exact_match": 25.356125831604004,
+     "vqa_acc_yes/no": 62.90079951286316,
+     "vqa_acc_number": 26.547789573669434,
+     "vqa_acc_other": 9.217289835214615,
+     "vqa_acc_what_color": 22.559140622615814
+    }
+   },
+   "mean": {
+    "vqa_acc": 31.876543164253235,
+    "exact_match": 25.356125831604004,
+    "vqa_acc_yes/no": 62.90079951286316,
+    "vqa_acc_number": 26.547789573669434,
+    "vqa_acc_other": 9.217289835214615,
+    "vqa_acc_what_color": 22.559140622615814
+   },
+   "std": {
+    "vqa_acc": 0.0,
+    "exact_match": 0.0,
+    "vqa_acc_yes/no": 0.0,
+    "vqa_acc_number": 0.0,
+    "vqa_acc_other": 0.0,
+    "vqa_acc_what_color": 0.0
+   }
+  },
+  "unimodal_b": {
+   "seeds": {
+    "261": {
+     "vqa_acc": 39.30293917655945,
+     "exact_match": 30.95916509628296,
+     "vqa_acc_yes/no": 66.08717441558838,
+     "vqa_acc_number": 28.60199809074402,
+     "vqa_acc_other": 21.405760943889618,
+     "vqa_acc_what_color": 28.172042965888977,
+     "epoch": 19
+    },
+    "262": {
+     "vqa_acc": 39.30864334106445,
+     "exact_match": 31.168091297149658,
+     "vqa_acc_yes/no": 65.89679718017578,
+     "vqa_acc_number": 30.099856853485107,
+     "vqa_acc_other": 21.156543493270874,
+     "vqa_acc_what_color": 26.709675788879395,
+     "epoch": 18
+    },
+    "263": {
+     "vqa_acc": 38.95156681537628,
+     "exact_match": 30.560302734375,
+     "vqa_acc_yes/no": 66.18236303329468,
+     "vqa_acc_number": 27.14693248271942,
+     "vqa_acc_other": 21.00856751203537,
+     "vqa_acc_what_color": 27.97849476337433,
+     "epoch": 20
+    }
+   },
+   "mean": {
+    "vqa_acc": 39.1877164443334,
+    "exact_match": 30.89585304260254,
+    "vqa_acc_yes/no": 66.05544487635295,
+    "vqa_acc_number": 28.616262475649517,
+    "vqa_acc_other": 21.190290649731953,
+    "vqa_acc_what_color": 27.620071172714233
+   },
+   "std": {
+    "vqa_acc": 0.2045314641213217,
+    "exact_match": 0.3088009818084221,
+    "vqa_acc_yes/no": 0.1454030153124427,
+    "vqa_acc_number": 1.4765138635898514,
+    "vqa_acc_other": 0.20073566824046304,
+    "vqa_acc_what_color": 0.7943425223762105
+   }
+  },
+  "unimodal_a": {
+   "seeds": {
+    "261": {
+     "vqa_acc": 25.401708483695984,
+     "exact_match": 20.474833250045776,
+     "vqa_acc_yes/no": 64.56913948059082,
+     "vqa_acc_number": 0.5563480779528618,
+     "vqa_acc_other": 1.7406541854143143,
+     "vqa_acc_what_color": 0.2795698819682002,
+     "epoch": 20
+    },
+    "262": {
+     "vqa_acc": 25.772076845169067,
+     "exact_match": 21.063627302646637,
+     "vqa_acc_yes/no": 65.93186259269714,
+     "vqa_acc_number": 0.5563480779528618,
+     "vqa_acc_other": 1.4408099465072155,
+     "vqa_acc_what_color": 0.06451613153330982,
+     "epoch": 4
+    },
+    "263": {
+     "vqa_acc": 25.470086932182312,
+     "exact_match": 20.569799840450287,
+     "vqa_acc_yes/no": 65.1703417301178,
+     "vqa_acc_number": 0.6847361102700233,
+     "vqa_acc_other": 1.3785047456622124,
+     "vqa_acc_what_color": 0.0,
+     "epoch": 16
+    }
+   },
+   "mean": {
+    "vqa_acc": 25.54795742034912,
+    "exact_match": 20.7027534643809,
+    "vqa_acc_yes/no": 65.22378126780193,
+    "vqa_acc_number": 0.5991440887252489,
+    "vqa_acc_other": 1.5199896258612473,
+    "vqa_acc_what_color": 0.11469533783383667
+   },
+   "std": {
+    "vqa_acc": 0.1970813042644254,
+    "exact_match": 0.3161124937134697,
+    "vqa_acc_yes/no": 0.6829314813420928,
+    "vqa_acc_number": 0.0741248650190396,
+    "vqa_acc_other": 0.19362365659997693,
+    "vqa_acc_what_color": 0.14638406431248407
+   }
+  },
+  "fusion_simple": {
+   "seeds": {
+    "261": {
+     "vqa_acc": 44.15004849433899,
+     "exact_match": 35.44159531593323,
+     "vqa_acc_yes/no": 66.89879894256592,
+     "vqa_acc_number": 27.360913157463074,
+     "vqa_acc_other": 31.051403284072876,
+     "vqa_acc_what_color": 35.20430326461792,
+     "epoch": 20
+    },
+    "262": {
+     "vqa_acc": 43.80057156085968,
+     "exact_match": 34.70085561275482,
+     "vqa_acc_yes/no": 66.66833162307739,
+     "vqa_acc_number": 27.460771799087524,
+     "vqa_acc_other": 30.486762523651123,
+     "vqa_acc_what_color": 33.892473578453064,
+     "epoch": 17
+    },
+    "263": {
+     "vqa_acc": 43.69990527629852,
+     "exact_match": 35.175687074661255,
+     "vqa_acc_yes/no": 66.55310988426208,
+     "vqa_acc_number": 28.330954909324646,
+     "vqa_acc_other": 30.132398009300232,
+     "vqa_acc_what_color": 34.73118245601654,
+     "epoch": 9
+    }
+   },
+   "mean": {
+    "vqa_acc": 43.8835084438324,
+    "exact_match": 35.10604600111643,
+    "vqa_acc_yes/no": 66.70674681663513,
+    "vqa_acc_number": 27.717546621958416,
+    "vqa_acc_other": 30.556854605674744,
+    "vqa_acc_what_color": 34.60931976636251
+   },
+   "std": {
+    "vqa_acc": 0.23625436314463982,
+    "exact_match": 0.3752482329199759,
+    "vqa_acc_yes/no": 0.17601712013269233,
+    "vqa_acc_number": 0.5335683951790527,
+    "vqa_acc_other": 0.4634947127387649,
+    "vqa_acc_what_color": 0.664350937173368
+   }
+  }
+ },
+ "examples_seed261": {
+  "fusion_right_text_wrong": {
+   "count": 621,
+   "examples": [
+    {
+     "question_id": 193824000,
+     "image_id": 193824,
+     "question": "What sport is this?",
+     "majority_answer": "soccer",
+     "text_only": "tennis",
+     "fusion": "soccer"
+    },
+    {
+     "question_id": 216757001,
+     "image_id": 216757,
+     "question": "What is the ground covered with?",
+     "majority_answer": "snow",
+     "text_only": "grass",
+     "fusion": "snow"
+    },
+    {
+     "question_id": 270198003,
+     "image_id": 270198,
+     "question": "What kind of vehicle?",
+     "majority_answer": "truck",
+     "text_only": "motorcycle",
+     "fusion": "truck"
+    },
+    {
+     "question_id": 330256003,
+     "image_id": 330256,
+     "question": "Are spectators present?",
+     "majority_answer": "no",
+     "text_only": "yes",
+     "fusion": "no"
+    },
+    {
+     "question_id": 334259002,
+     "image_id": 334259,
+     "question": "How many cranes?",
+     "majority_answer": "3",
+     "text_only": "1",
+     "fusion": "3"
+    }
+   ]
+  },
+  "text_right_fusion_wrong": {
+   "count": 405,
+   "examples": [
+    {
+     "question_id": 220903005,
+     "image_id": 220903,
+     "question": "How many panels of fencing is the player covering?",
+     "majority_answer": "2",
+     "text_only": "2",
+     "fusion": "1"
+    },
+    {
+     "question_id": 242541000,
+     "image_id": 242541,
+     "question": "What color is the water?",
+     "majority_answer": "blue",
+     "text_only": "blue",
+     "fusion": "brown"
+    },
+    {
+     "question_id": 290911002,
+     "image_id": 290911,
+     "question": "How many wheels are visible?",
+     "majority_answer": "3",
+     "text_only": "3",
+     "fusion": "4"
+    },
+    {
+     "question_id": 348573002,
+     "image_id": 348573,
+     "question": "How many vehicles are in the background?",
+     "majority_answer": "1",
+     "text_only": "1",
+     "fusion": "4"
+    },
+    {
+     "question_id": 355668002,
+     "image_id": 355668,
+     "question": "Are there any tall skyscrapers in this picture?",
+     "majority_answer": "no",
+     "text_only": "no",
+     "fusion": "yes"
+    }
+   ]
+  }
+ }
+}
