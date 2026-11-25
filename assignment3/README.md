@@ -4,6 +4,7 @@
 Visual question answering on a VQA v2 subset, framed as classification over the 771 most frequent train answers.
 
 ## Documents
+- Assignment page: https://tapstoptap.github.io/deep-learning-261/assignment3
 - M1 proposal: [PROPOSAL.md](PROPOSAL.md). Approval status: no formal decision received.
 - M2 draft: [report/M2_DRAFT.md](report/M2_DRAFT.md)
 
@@ -30,6 +31,7 @@ The improved fusion config is a placeholder until M3.
 python src/evaluate.py --split val
 python src/evaluate.py --split test   # once per final checkpoint
 python src/report_tables.py
+python src/plot_curves.py
 ```
 
 ## Checkpoints
