@@ -36,6 +36,19 @@ Pipeline: raw (image, question) pair → preprocessing → frozen encoders → c
 
 The same hyperparameters are used for b, c and d. They were fixed before the first run and were not tuned.
 
+No learning-rate scheduler and no early stopping: every run trains for all 20 epochs, and the best-val checkpoint is kept.
+
+**Own code and libraries**
+
+| part | source |
+|---|---|
+| Split loading, answer normalisation (following the official VQA evaluation rules), VQA accuracy, soft targets, oracle ceiling | written in this repository (`eda/vqa_eda.py`, `src/datasets/vqa.py`, `src/utils/metrics.py`) |
+| Question-type prior, MLP head, unimodal and fusion modules, training loop, evaluation and report tables | written in this repository (`src/`) |
+| ResNet-50 architecture, pretrained weights and image transforms | torchvision |
+| BERT-base model, pretrained weights and tokenizer | Hugging Face transformers |
+| Layers, loss, AdamW, mixed precision, data loading | PyTorch |
+| Tables and arrays, config files, images, plots | pandas, NumPy, PyYAML, Pillow, matplotlib |
+
 | id | model | input |
 |---|---|---|
 | a | prior: most common train answer per official question_type (no training) | question type label |
@@ -80,6 +93,16 @@ Full tables, per-seed gaps and raw values: [m2_results.md](../results/m2_results
 | d: concat fusion | 42.98 ± 0.22 | 34.79 ± 0.19 | 66.21 ± 0.34 | 28.04 ± 0.24 | 29.37 ± 0.40 | 38.12 ± 0.89 |
 
 Test was run once, after the val results were in, on the best-val checkpoints. Nothing was changed afterwards. The test split is unfiltered, as set in M1.
+
+### Training behaviour
+
+![Training loss and validation VQA accuracy per epoch](../results/figures/training_curves.png)
+
+Lines are the mean of 3 seeds, bands the min–max range. End labels give the epoch-20 means, which differ slightly from the tables above (those use each run's best-val epoch).
+
+- **c, image only:** training loss keeps falling (6.03 at epoch 2 to 4.50 at epoch 20) while val accuracy stays between 24.3 and 25.1. Further training gives no val gain.
+- **b, text only:** val accuracy is still rising slowly at the end (37.23 at epoch 9 to 38.80 at epoch 20), and the best epochs are 18–20. It may not have converged in 20 epochs.
+- **d, concat fusion:** val accuracy changes little after about epoch 9 (43.19 there, 43.54 at epoch 20) while training loss falls from 2.95 to 2.12. The growing fit to train no longer transfers to val, a sign of mild overfitting.
 
 ## 5. Hypotheses
 
@@ -157,6 +180,7 @@ python src/train.py --config configs/fusion_simple.yaml
 python src/evaluate.py --split val
 python src/evaluate.py --split test
 python src/report_tables.py
+python src/plot_curves.py
 ```
 
 Checks made: the val oracle (88.54) and train coverage (86.59) reproduce the M1 values; the prior's val accuracy (31.88) agrees between two separate computations; retraining model d with seed 261 gave identical weights.
@@ -166,3 +190,7 @@ Checks made: the val oracle (88.54) and train coverage (86.59) reproduce the M1 
 - Improved fusion (model e): question-guided attention over the ResNet 7×7 grid.
 - Ablations: concat against attention; soft-score BCE against hard cross-entropy (H4); K = 771 against K = 1000; fine-tuning the top 2 BERT layers; zeroing one modality at test time.
 - Error analysis and support/conflict cases in depth, final report, slides, video and checkpoint links.
+
+## 11. AI usage disclosure
+
+AI tools (Claude Opus 5.5 and Claude Sonnet 5.5 via Claude Code) were used under the student's direction and decisions to plan the M2 experiments, write the code, run feature extraction, training and evaluation, and draft this report, the README and the Pages text. The full record, with prompts, affected files, verification and the responsible member, is in [AI_USAGE.md](../../AI_USAGE.md), entry #16.
