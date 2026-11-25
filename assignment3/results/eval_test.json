@@ -1,0 +1,183 @@
+{
+ "split": "test",
+ "n_questions": 26221,
+ "oracle_vqa_acc": 87.10499405860901,
+ "train_coverage_pct": 86.58513835630636,
+ "env": {
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "torch": "2.15.0+cu132",
+  "cuda": "13.2",
+  "python": "3.14.4"
+ },
+ "models": {
+  "prior": {
+   "seeds": {
+    "-": {
+     "vqa_acc": 31.84889853000641,
+     "exact_match": 25.46432316303253,
+     "vqa_acc_yes/no": 63.420653343200684,
+     "vqa_acc_number": 26.64353847503662,
+     "vqa_acc_other": 9.322060644626617,
+     "vqa_acc_what_color": 24.381257593631744
+    }
+   },
+   "mean": {
+    "vqa_acc": 31.84889853000641,
+    "exact_match": 25.46432316303253,
+    "vqa_acc_yes/no": 63.420653343200684,
+    "vqa_acc_number": 26.64353847503662,
+    "vqa_acc_other": 9.322060644626617,
+    "vqa_acc_what_color": 24.381257593631744
+   },
+   "std": {
+    "vqa_acc": 0.0,
+    "exact_match": 0.0,
+    "vqa_acc_yes/no": 0.0,
+    "vqa_acc_number": 0.0,
+    "vqa_acc_other": 0.0,
+    "vqa_acc_what_color": 0.0
+   }
+  },
+  "unimodal_b": {
+   "seeds": {
+    "261": {
+     "vqa_acc": 38.707903027534485,
+     "exact_match": 30.75016140937805,
+     "vqa_acc_yes/no": 65.54173827171326,
+     "vqa_acc_number": 28.704828023910522,
+     "vqa_acc_other": 21.0516557097435,
+     "vqa_acc_what_color": 33.27993452548981,
+     "epoch": 19
+    },
+    "262": {
+     "vqa_acc": 38.52446377277374,
+     "exact_match": 31.047633290290833,
+     "vqa_acc_yes/no": 65.48771858215332,
+     "vqa_acc_number": 29.528766870498657,
+     "vqa_acc_other": 20.501118898391724,
+     "vqa_acc_what_color": 31.205448508262634,
+     "epoch": 18
+    },
+    "263": {
+     "vqa_acc": 38.551923632621765,
+     "exact_match": 30.58617115020752,
+     "vqa_acc_yes/no": 65.2665376663208,
+     "vqa_acc_number": 27.851980924606323,
+     "vqa_acc_other": 21.172110736370087,
+     "vqa_acc_what_color": 31.734082102775574,
+     "epoch": 20
+    }
+   },
+   "mean": {
+    "vqa_acc": 38.59476347764333,
+    "exact_match": 30.794655283292133,
+    "vqa_acc_yes/no": 65.4319981733958,
+    "vqa_acc_number": 28.695191939671833,
+    "vqa_acc_other": 20.908295114835102,
+    "vqa_acc_what_color": 32.07315504550934
+   },
+   "std": {
+    "vqa_acc": 0.09893901802574123,
+    "exact_match": 0.23392649549480177,
+    "vqa_acc_yes/no": 0.14581637859367189,
+    "vqa_acc_number": 0.838434504105779,
+    "vqa_acc_other": 0.3577313332485183,
+    "vqa_acc_what_color": 1.0780078405505062
+   }
+  },
+  "unimodal_a": {
+   "seeds": {
+    "261": {
+     "vqa_acc": 24.032646417617798,
+     "exact_match": 18.95427256822586,
+     "vqa_acc_yes/no": 61.90907955169678,
+     "vqa_acc_number": 0.5261636339128017,
+     "vqa_acc_other": 1.6176357865333557,
+     "vqa_acc_what_color": 0.6407689303159714,
+     "epoch": 20
+    },
+    "262": {
+     "vqa_acc": 24.8289555311203,
+     "exact_match": 19.71702128648758,
+     "vqa_acc_yes/no": 64.32065963745117,
+     "vqa_acc_number": 0.3122289665043354,
+     "vqa_acc_other": 1.4601189643144608,
+     "vqa_acc_what_color": 0.12414897792041302,
+     "epoch": 4
+    },
+    "263": {
+     "vqa_acc": 23.99984747171402,
+     "exact_match": 18.76358687877655,
+     "vqa_acc_yes/no": 62.29334473609924,
+     "vqa_acc_number": 0.39028620813041925,
+     "vqa_acc_other": 1.2964249588549137,
+     "vqa_acc_what_color": 0.6127352826297283,
+     "epoch": 16
+    }
+   },
+   "mean": {
+    "vqa_acc": 24.28714980681737,
+    "exact_match": 19.144960244496662,
+    "vqa_acc_yes/no": 62.8410279750824,
+    "vqa_acc_number": 0.40955960284918547,
+    "vqa_acc_other": 1.4580599032342434,
+    "vqa_acc_what_color": 0.4592177302887042
+   },
+   "std": {
+    "vqa_acc": 0.46950402008786335,
+    "exact_match": 0.50451029212791,
+    "vqa_acc_yes/no": 1.295722703821733,
+    "vqa_acc_number": 0.10826175819642779,
+    "vqa_acc_other": 0.16061531294950207,
+    "vqa_acc_what_color": 0.2905163901759788
+   }
+  },
+  "fusion_simple": {
+   "seeds": {
+    "261": {
+     "vqa_acc": 43.19133460521698,
+     "exact_match": 35.01010537147522,
+     "vqa_acc_yes/no": 66.56813621520996,
+     "vqa_acc_number": 28.167101740837097,
+     "vqa_acc_other": 29.49501872062683,
+     "vqa_acc_what_color": 39.13496136665344,
+     "epoch": 20
+    },
+    "262": {
+     "vqa_acc": 42.98272430896759,
+     "exact_match": 34.68975126743317,
+     "vqa_acc_yes/no": 65.89746475219727,
+     "vqa_acc_number": 27.7594655752182,
+     "vqa_acc_other": 29.689601063728333,
+     "vqa_acc_what_color": 37.50500679016113,
+     "epoch": 17
+    },
+    "263": {
+     "vqa_acc": 42.75542199611664,
+     "exact_match": 34.674498438835144,
+     "vqa_acc_yes/no": 66.16756916046143,
+     "vqa_acc_number": 28.18155586719513,
+     "vqa_acc_other": 28.912052512168884,
+     "vqa_acc_what_color": 37.71726191043854,
+     "epoch": 9
+    }
+   },
+   "mean": {
+    "vqa_acc": 42.97649363676707,
+    "exact_match": 34.79145169258118,
+    "vqa_acc_yes/no": 66.21105670928955,
+    "vqa_acc_number": 28.036041061083477,
+    "vqa_acc_other": 29.365557432174683,
+    "vqa_acc_what_color": 38.11907668908437
+   },
+   "std": {
+    "vqa_acc": 0.21802308742474866,
+    "exact_match": 0.18951315433363616,
+    "vqa_acc_yes/no": 0.3374439627585685,
+    "vqa_acc_number": 0.23963040286742252,
+    "vqa_acc_other": 0.4046178523172412,
+    "vqa_acc_what_color": 0.8861598713610914
+   }
+  }
+ }
+}

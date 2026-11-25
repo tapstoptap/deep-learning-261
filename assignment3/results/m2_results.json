@@ -1,0 +1,592 @@
+{
+ "splits": {
+  "val": {
+   "split": "val",
+   "n_questions": 5265,
+   "oracle_vqa_acc": 88.54131698608398,
+   "train_coverage_pct": 86.58513835630636,
+   "env": {
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "torch": "2.15.0+cu132",
+    "cuda": "13.2",
+    "python": "3.14.4"
+   },
+   "models": {
+    "prior": {
+     "seeds": {
+      "-": {
+       "vqa_acc": 31.876543164253235,
+       "exact_match": 25.356125831604004,
+       "vqa_acc_yes/no": 62.90079951286316,
+       "vqa_acc_number": 26.547789573669434,
+       "vqa_acc_other": 9.217289835214615,
+       "vqa_acc_what_color": 22.559140622615814
+      }
+     },
+     "mean": {
+      "vqa_acc": 31.876543164253235,
+      "exact_match": 25.356125831604004,
+      "vqa_acc_yes/no": 62.90079951286316,
+      "vqa_acc_number": 26.547789573669434,
+      "vqa_acc_other": 9.217289835214615,
+      "vqa_acc_what_color": 22.559140622615814
+     },
+     "std": {
+      "vqa_acc": 0.0,
+      "exact_match": 0.0,
+      "vqa_acc_yes/no": 0.0,
+      "vqa_acc_number": 0.0,
+      "vqa_acc_other": 0.0,
+      "vqa_acc_what_color": 0.0
+     }
+    },
+    "unimodal_b": {
+     "seeds": {
+      "261": {
+       "vqa_acc": 39.30293917655945,
+       "exact_match": 30.95916509628296,
+       "vqa_acc_yes/no": 66.08717441558838,
+       "vqa_acc_number": 28.60199809074402,
+       "vqa_acc_other": 21.405760943889618,
+       "vqa_acc_what_color": 28.172042965888977,
+       "epoch": 19
+      },
+      "262": {
+       "vqa_acc": 39.30864334106445,
+       "exact_match": 31.168091297149658,
+       "vqa_acc_yes/no": 65.89679718017578,
+       "vqa_acc_number": 30.099856853485107,
+       "vqa_acc_other": 21.156543493270874,
+       "vqa_acc_what_color": 26.709675788879395,
+       "epoch": 18
+      },
+      "263": {
+       "vqa_acc": 38.95156681537628,
+       "exact_match": 30.560302734375,
+       "vqa_acc_yes/no": 66.18236303329468,
+       "vqa_acc_number": 27.14693248271942,
+       "vqa_acc_other": 21.00856751203537,
+       "vqa_acc_what_color": 27.97849476337433,
+       "epoch": 20
+      }
+     },
+     "mean": {
+      "vqa_acc": 39.1877164443334,
+      "exact_match": 30.89585304260254,
+      "vqa_acc_yes/no": 66.05544487635295,
+      "vqa_acc_number": 28.616262475649517,
+      "vqa_acc_other": 21.190290649731953,
+      "vqa_acc_what_color": 27.620071172714233
+     },
+     "std": {
+      "vqa_acc": 0.2045314641213217,
+      "exact_match": 0.3088009818084221,
+      "vqa_acc_yes/no": 0.1454030153124427,
+      "vqa_acc_number": 1.4765138635898514,
+      "vqa_acc_other": 0.20073566824046304,
+      "vqa_acc_what_color": 0.7943425223762105
+     }
+    },
+    "unimodal_a": {
+     "seeds": {
+      "261": {
+       "vqa_acc": 25.401708483695984,
+       "exact_match": 20.474833250045776,
+       "vqa_acc_yes/no": 64.56913948059082,
+       "vqa_acc_number": 0.5563480779528618,
+       "vqa_acc_other": 1.7406541854143143,
+       "vqa_acc_what_color": 0.2795698819682002,
+       "epoch": 20
+      },
+      "262": {
+       "vqa_acc": 25.772076845169067,
+       "exact_match": 21.063627302646637,
+       "vqa_acc_yes/no": 65.93186259269714,
+       "vqa_acc_number": 0.5563480779528618,
+       "vqa_acc_other": 1.4408099465072155,
+       "vqa_acc_what_color": 0.06451613153330982,
+       "epoch": 4
+      },
+      "263": {
+       "vqa_acc": 25.470086932182312,
+       "exact_match": 20.569799840450287,
+       "vqa_acc_yes/no": 65.1703417301178,
+       "vqa_acc_number": 0.6847361102700233,
+       "vqa_acc_other": 1.3785047456622124,
+       "vqa_acc_what_color": 0.0,
+       "epoch": 16
+      }
+     },
+     "mean": {
+      "vqa_acc": 25.54795742034912,
+      "exact_match": 20.7027534643809,
+      "vqa_acc_yes/no": 65.22378126780193,
+      "vqa_acc_number": 0.5991440887252489,
+      "vqa_acc_other": 1.5199896258612473,
+      "vqa_acc_what_color": 0.11469533783383667
+     },
+     "std": {
+      "vqa_acc": 0.1970813042644254,
+      "exact_match": 0.3161124937134697,
+      "vqa_acc_yes/no": 0.6829314813420928,
+      "vqa_acc_number": 0.0741248650190396,
+      "vqa_acc_other": 0.19362365659997693,
+      "vqa_acc_what_color": 0.14638406431248407
+     }
+    },
+    "fusion_simple": {
+     "seeds": {
+      "261": {
+       "vqa_acc": 44.15004849433899,
+       "exact_match": 35.44159531593323,
+       "vqa_acc_yes/no": 66.89879894256592,
+       "vqa_acc_number": 27.360913157463074,
+       "vqa_acc_other": 31.051403284072876,
+       "vqa_acc_what_color": 35.20430326461792,
+       "epoch": 20
+      },
+      "262": {
+       "vqa_acc": 43.80057156085968,
+       "exact_match": 34.70085561275482,
+       "vqa_acc_yes/no": 66.66833162307739,
+       "vqa_acc_number": 27.460771799087524,
+       "vqa_acc_other": 30.486762523651123,
+       "vqa_acc_what_color": 33.892473578453064,
+       "epoch": 17
+      },
+      "263": {
+       "vqa_acc": 43.69990527629852,
+       "exact_match": 35.175687074661255,
+       "vqa_acc_yes/no": 66.55310988426208,
+       "vqa_acc_number": 28.330954909324646,
+       "vqa_acc_other": 30.132398009300232,
+       "vqa_acc_what_color": 34.73118245601654,
+       "epoch": 9
+      }
+     },
+     "mean": {
+      "vqa_acc": 43.8835084438324,
+      "exact_match": 35.10604600111643,
+      "vqa_acc_yes/no": 66.70674681663513,
+      "vqa_acc_number": 27.717546621958416,
+      "vqa_acc_other": 30.556854605674744,
+      "vqa_acc_what_color": 34.60931976636251
+     },
+     "std": {
+      "vqa_acc": 0.23625436314463982,
+      "exact_match": 0.3752482329199759,
+      "vqa_acc_yes/no": 0.17601712013269233,
+      "vqa_acc_number": 0.5335683951790527,
+      "vqa_acc_other": 0.4634947127387649,
+      "vqa_acc_what_color": 0.664350937173368
+     }
+    }
+   },
+   "examples_seed261": {
+    "fusion_right_text_wrong": {
+     "count": 621,
+     "examples": [
+      {
+       "question_id": 193824000,
+       "image_id": 193824,
+       "question": "What sport is this?",
+       "majority_answer": "soccer",
+       "text_only": "tennis",
+       "fusion": "soccer"
+      },
+      {
+       "question_id": 216757001,
+       "image_id": 216757,
+       "question": "What is the ground covered with?",
+       "majority_answer": "snow",
+       "text_only": "grass",
+       "fusion": "snow"
+      },
+      {
+       "question_id": 270198003,
+       "image_id": 270198,
+       "question": "What kind of vehicle?",
+       "majority_answer": "truck",
+       "text_only": "motorcycle",
+       "fusion": "truck"
+      },
+      {
+       "question_id": 330256003,
+       "image_id": 330256,
+       "question": "Are spectators present?",
+       "majority_answer": "no",
+       "text_only": "yes",
+       "fusion": "no"
+      },
+      {
+       "question_id": 334259002,
+       "image_id": 334259,
+       "question": "How many cranes?",
+       "majority_answer": "3",
+       "text_only": "1",
+       "fusion": "3"
+      }
+     ]
+    },
+    "text_right_fusion_wrong": {
+     "count": 405,
+     "examples": [
+      {
+       "question_id": 220903005,
+       "image_id": 220903,
+       "question": "How many panels of fencing is the player covering?",
+       "majority_answer": "2",
+       "text_only": "2",
+       "fusion": "1"
+      },
+      {
+       "question_id": 242541000,
+       "image_id": 242541,
+       "question": "What color is the water?",
+       "majority_answer": "blue",
+       "text_only": "blue",
+       "fusion": "brown"
+      },
+      {
+       "question_id": 290911002,
+       "image_id": 290911,
+       "question": "How many wheels are visible?",
+       "majority_answer": "3",
+       "text_only": "3",
+       "fusion": "4"
+      },
+      {
+       "question_id": 348573002,
+       "image_id": 348573,
+       "question": "How many vehicles are in the background?",
+       "majority_answer": "1",
+       "text_only": "1",
+       "fusion": "4"
+      },
+      {
+       "question_id": 355668002,
+       "image_id": 355668,
+       "question": "Are there any tall skyscrapers in this picture?",
+       "majority_answer": "no",
+       "text_only": "no",
+       "fusion": "yes"
+      }
+     ]
+    }
+   }
+  },
+  "test": {
+   "split": "test",
+   "n_questions": 26221,
+   "oracle_vqa_acc": 87.10499405860901,
+   "train_coverage_pct": 86.58513835630636,
+   "env": {
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "torch": "2.15.0+cu132",
+    "cuda": "13.2",
+    "python": "3.14.4"
+   },
+   "models": {
+    "prior": {
+     "seeds": {
+      "-": {
+       "vqa_acc": 31.84889853000641,
+       "exact_match": 25.46432316303253,
+       "vqa_acc_yes/no": 63.420653343200684,
+       "vqa_acc_number": 26.64353847503662,
+       "vqa_acc_other": 9.322060644626617,
+       "vqa_acc_what_color": 24.381257593631744
+      }
+     },
+     "mean": {
+      "vqa_acc": 31.84889853000641,
+      "exact_match": 25.46432316303253,
+      "vqa_acc_yes/no": 63.420653343200684,
+      "vqa_acc_number": 26.64353847503662,
+      "vqa_acc_other": 9.322060644626617,
+      "vqa_acc_what_color": 24.381257593631744
+     },
+     "std": {
+      "vqa_acc": 0.0,
+      "exact_match": 0.0,
+      "vqa_acc_yes/no": 0.0,
+      "vqa_acc_number": 0.0,
+      "vqa_acc_other": 0.0,
+      "vqa_acc_what_color": 0.0
+     }
+    },
+    "unimodal_b": {
+     "seeds": {
+      "261": {
+       "vqa_acc": 38.707903027534485,
+       "exact_match": 30.75016140937805,
+       "vqa_acc_yes/no": 65.54173827171326,
+       "vqa_acc_number": 28.704828023910522,
+       "vqa_acc_other": 21.0516557097435,
+       "vqa_acc_what_color": 33.27993452548981,
+       "epoch": 19
+      },
+      "262": {
+       "vqa_acc": 38.52446377277374,
+       "exact_match": 31.047633290290833,
+       "vqa_acc_yes/no": 65.48771858215332,
+       "vqa_acc_number": 29.528766870498657,
+       "vqa_acc_other": 20.501118898391724,
+       "vqa_acc_what_color": 31.205448508262634,
+       "epoch": 18
+      },
+      "263": {
+       "vqa_acc": 38.551923632621765,
+       "exact_match": 30.58617115020752,
+       "vqa_acc_yes/no": 65.2665376663208,
+       "vqa_acc_number": 27.851980924606323,
+       "vqa_acc_other": 21.172110736370087,
+       "vqa_acc_what_color": 31.734082102775574,
+       "epoch": 20
+      }
+     },
+     "mean": {
+      "vqa_acc": 38.59476347764333,
+      "exact_match": 30.794655283292133,
+      "vqa_acc_yes/no": 65.4319981733958,
+      "vqa_acc_number": 28.695191939671833,
+      "vqa_acc_other": 20.908295114835102,
+      "vqa_acc_what_color": 32.07315504550934
+     },
+     "std": {
+      "vqa_acc": 0.09893901802574123,
+      "exact_match": 0.23392649549480177,
+      "vqa_acc_yes/no": 0.14581637859367189,
+      "vqa_acc_number": 0.838434504105779,
+      "vqa_acc_other": 0.3577313332485183,
+      "vqa_acc_what_color": 1.0780078405505062
+     }
+    },
+    "unimodal_a": {
+     "seeds": {
+      "261": {
+       "vqa_acc": 24.032646417617798,
+       "exact_match": 18.95427256822586,
+       "vqa_acc_yes/no": 61.90907955169678,
+       "vqa_acc_number": 0.5261636339128017,
+       "vqa_acc_other": 1.6176357865333557,
+       "vqa_acc_what_color": 0.6407689303159714,
+       "epoch": 20
+      },
+      "262": {
+       "vqa_acc": 24.8289555311203,
+       "exact_match": 19.71702128648758,
+       "vqa_acc_yes/no": 64.32065963745117,
+       "vqa_acc_number": 0.3122289665043354,
+       "vqa_acc_other": 1.4601189643144608,
+       "vqa_acc_what_color": 0.12414897792041302,
+       "epoch": 4
+      },
+      "263": {
+       "vqa_acc": 23.99984747171402,
+       "exact_match": 18.76358687877655,
+       "vqa_acc_yes/no": 62.29334473609924,
+       "vqa_acc_number": 0.39028620813041925,
+       "vqa_acc_other": 1.2964249588549137,
+       "vqa_acc_what_color": 0.6127352826297283,
+       "epoch": 16
+      }
+     },
+     "mean": {
+      "vqa_acc": 24.28714980681737,
+      "exact_match": 19.144960244496662,
+      "vqa_acc_yes/no": 62.8410279750824,
+      "vqa_acc_number": 0.40955960284918547,
+      "vqa_acc_other": 1.4580599032342434,
+      "vqa_acc_what_color": 0.4592177302887042
+     },
+     "std": {
+      "vqa_acc": 0.46950402008786335,
+      "exact_match": 0.50451029212791,
+      "vqa_acc_yes/no": 1.295722703821733,
+      "vqa_acc_number": 0.10826175819642779,
+      "vqa_acc_other": 0.16061531294950207,
+      "vqa_acc_what_color": 0.2905163901759788
+     }
+    },
+    "fusion_simple": {
+     "seeds": {
+      "261": {
+       "vqa_acc": 43.19133460521698,
+       "exact_match": 35.01010537147522,
+       "vqa_acc_yes/no": 66.56813621520996,
+       "vqa_acc_number": 28.167101740837097,
+       "vqa_acc_other": 29.49501872062683,
+       "vqa_acc_what_color": 39.13496136665344,
+       "epoch": 20
+      },
+      "262": {
+       "vqa_acc": 42.98272430896759,
+       "exact_match": 34.68975126743317,
+       "vqa_acc_yes/no": 65.89746475219727,
+       "vqa_acc_number": 27.7594655752182,
+       "vqa_acc_other": 29.689601063728333,
+       "vqa_acc_what_color": 37.50500679016113,
+       "epoch": 17
+      },
+      "263": {
+       "vqa_acc": 42.75542199611664,
+       "exact_match": 34.674498438835144,
+       "vqa_acc_yes/no": 66.16756916046143,
+       "vqa_acc_number": 28.18155586719513,
+       "vqa_acc_other": 28.912052512168884,
+       "vqa_acc_what_color": 37.71726191043854,
+       "epoch": 9
+      }
+     },
+     "mean": {
+      "vqa_acc": 42.97649363676707,
+      "exact_match": 34.79145169258118,
+      "vqa_acc_yes/no": 66.21105670928955,
+      "vqa_acc_number": 28.036041061083477,
+      "vqa_acc_other": 29.365557432174683,
+      "vqa_acc_what_color": 38.11907668908437
+     },
+     "std": {
+      "vqa_acc": 0.21802308742474866,
+      "exact_match": 0.18951315433363616,
+      "vqa_acc_yes/no": 0.3374439627585685,
+      "vqa_acc_number": 0.23963040286742252,
+      "vqa_acc_other": 0.4046178523172412,
+      "vqa_acc_what_color": 0.8861598713610914
+     }
+    }
+   }
+  }
+ },
+ "training": {
+  "unimodal_a": {
+   "params": 2892547,
+   "mean_epoch_seconds": 0.3601761017895082,
+   "train_seconds_all_seeds": 21.826073008001913,
+   "best_epochs": [
+    20,
+    4,
+    16
+   ]
+  },
+  "unimodal_b": {
+   "params": 1579267,
+   "mean_epoch_seconds": 0.27063442619297956,
+   "train_seconds_all_seeds": 16.5018573440002,
+   "best_epochs": [
+    19,
+    18,
+    20
+   ]
+  },
+  "fusion_simple": {
+   "params": 3680515,
+   "mean_epoch_seconds": 0.4505295205613915,
+   "train_seconds_all_seeds": 27.243073668999386,
+   "best_epochs": [
+    20,
+    17,
+    9
+   ]
+  }
+ },
+ "gaps": {
+  "unimodal_b-unimodal_a": {
+   "val": {
+    "261": {
+     "vqa_acc": 13.901230692863464,
+     "vqa_acc_yes/no": 1.5180349349975586,
+     "vqa_acc_number": 28.045650012791157,
+     "vqa_acc_other": 19.665106758475304,
+     "vqa_acc_what_color": 27.892473083920777
+    },
+    "262": {
+     "vqa_acc": 13.536566495895386,
+     "vqa_acc_yes/no": -0.035065412521362305,
+     "vqa_acc_number": 29.543508775532246,
+     "vqa_acc_other": 19.71573354676366,
+     "vqa_acc_what_color": 26.645159657346085
+    },
+    "263": {
+     "vqa_acc": 13.48147988319397,
+     "vqa_acc_yes/no": 1.0120213031768799,
+     "vqa_acc_number": 26.462196372449398,
+     "vqa_acc_other": 19.630062766373158,
+     "vqa_acc_what_color": 27.97849476337433
+    }
+   },
+   "test": {
+    "261": {
+     "vqa_acc": 14.675256609916687,
+     "vqa_acc_yes/no": 3.6326587200164795,
+     "vqa_acc_number": 28.17866438999772,
+     "vqa_acc_other": 19.434019923210144,
+     "vqa_acc_what_color": 32.639165595173836
+    },
+    "262": {
+     "vqa_acc": 13.695508241653442,
+     "vqa_acc_yes/no": 1.1670589447021484,
+     "vqa_acc_number": 29.216537903994322,
+     "vqa_acc_other": 19.040999934077263,
+     "vqa_acc_what_color": 31.08129953034222
+    },
+    "263": {
+     "vqa_acc": 14.552076160907745,
+     "vqa_acc_yes/no": 2.9731929302215576,
+     "vqa_acc_number": 27.461694716475904,
+     "vqa_acc_other": 19.875685777515173,
+     "vqa_acc_what_color": 31.121346820145845
+    }
+   }
+  },
+  "fusion_simple-unimodal_b": {
+   "val": {
+    "261": {
+     "vqa_acc": 4.847109317779541,
+     "vqa_acc_yes/no": 0.8116245269775391,
+     "vqa_acc_number": -1.2410849332809448,
+     "vqa_acc_other": 9.645642340183258,
+     "vqa_acc_what_color": 7.032260298728943
+    },
+    "262": {
+     "vqa_acc": 4.491928219795227,
+     "vqa_acc_yes/no": 0.7715344429016113,
+     "vqa_acc_number": -2.639085054397583,
+     "vqa_acc_other": 9.330219030380249,
+     "vqa_acc_what_color": 7.182797789573669
+    },
+    "263": {
+     "vqa_acc": 4.748338460922241,
+     "vqa_acc_yes/no": 0.3707468509674072,
+     "vqa_acc_number": 1.1840224266052246,
+     "vqa_acc_other": 9.123830497264862,
+     "vqa_acc_what_color": 6.752687692642212
+    }
+   },
+   "test": {
+    "261": {
+     "vqa_acc": 4.483431577682495,
+     "vqa_acc_yes/no": 1.026397943496704,
+     "vqa_acc_number": -0.5377262830734253,
+     "vqa_acc_other": 8.443363010883331,
+     "vqa_acc_what_color": 5.855026841163635
+    },
+    "262": {
+     "vqa_acc": 4.458260536193848,
+     "vqa_acc_yes/no": 0.4097461700439453,
+     "vqa_acc_number": -1.7693012952804565,
+     "vqa_acc_other": 9.188482165336609,
+     "vqa_acc_what_color": 6.2995582818984985
+    },
+    "263": {
+     "vqa_acc": 4.203498363494873,
+     "vqa_acc_yes/no": 0.901031494140625,
+     "vqa_acc_number": 0.32957494258880615,
+     "vqa_acc_other": 7.739941775798798,
+     "vqa_acc_what_color": 5.983179807662964
+    }
+   }
+  }
+ }
+}
